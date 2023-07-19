@@ -51,6 +51,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-.out
-.vscode
-.ccls-cache
+*.out
+.vscode/
+.ccls-cache/
