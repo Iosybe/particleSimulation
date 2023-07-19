@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "enabled",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/data/code/c/particleSim",
+            "binaryPath": "/data/code/c/particleSim/main",
+            "binaryArgs": []
+        }
+    ]
+}
