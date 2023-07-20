@@ -2,7 +2,7 @@ cc = g++
 CFLAGS = -Wall -Wextra
 
 all:
-	$(cc) $(CFLAGS) -o main.out main.c loadShader.cpp -lGL -lglfw -lGLEW
+	$(cc) $(CFLAGS) -o build/main.out src/main.c src/shapes.c src/loadShader.cpp -lGL -lglfw -lGLEW
 
 run: all
-	./main.out
+	./build/main.out
