@@ -11,7 +11,7 @@ void window_size_callback(GLFWwindow* window, int _width, int _height) {
     UNUSED(window);
 }
 
-void transformCoordinates(GLfloat* circle, int segments) {
+void aspect_ratio_correction(GLfloat* circle, int segments) {
     for (int i = 0; i < segments * 9; i += 3) {
         circle[i] = circle[i] / width;
         circle[i + 1] = circle[i + 1] / height; 
@@ -59,7 +59,7 @@ void drawCircle(GLfloat* templateCircle, int segments, float centerX, float cent
         circle[i + 8] = 0.0f;
     }
 
-    transformCoordinates(circle, segments);
+    aspect_ratio_correction(circle, segments);
 
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);

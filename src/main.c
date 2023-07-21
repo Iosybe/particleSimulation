@@ -8,7 +8,9 @@
 
 #include "loadShader.hpp"
 #include "shapes.h"
+#include "physics.h"
 
+#define NOP 100
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -58,6 +60,9 @@ int main() {
 
     srand(time(NULL));
 
+    Particle particles[NOP];
+    initializeParticles(particles, NOP);
+
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
 
     do {
@@ -65,8 +70,12 @@ int main() {
 
         glUseProgram(programID);
 
-        for (int i = 0; i < 100; i++) {
-            drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
+        // for (int i = 0; i < 100; i++) {
+        //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
+        // }
+
+        for (int i = 0; i < NOP; i++) {
+            drawCircle(circle, 128, particles[i].posX, particles[i].posY);
         }
 
         glfwSwapBuffers(window);
