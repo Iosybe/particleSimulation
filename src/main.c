@@ -10,7 +10,7 @@
 #include "shapes.h"
 #include "physics.h"
 
-#define NOP 100
+#define NOP 2000
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -29,6 +29,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+
+    // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
     GLFWwindow* window;
     window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
@@ -56,7 +58,7 @@ int main() {
     glBindVertexArray(VertexArrayID);
 
     GLfloat circle[128 * 9];
-    buildCircle(circle, 20.0, 128);
+    buildCircle(circle, 4.0, 128);
 
     srand(time(NULL));
 
@@ -64,6 +66,9 @@ int main() {
     initializeParticles(particles, NOP);
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
+
+    time_t prevTime = time(NULL);
+    int fps = 0;
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -74,9 +79,28 @@ int main() {
         //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
         // }
 
+        calculatePhysics(particles, NOP);
+
+        // return 1;
+
         for (int i = 0; i < NOP; i++) {
             drawCircle(circle, 128, particles[i].posX, particles[i].posY);
         }
+
+        // while (prevTime + 100 > clock()) {
+        //     glfwPollEvents();
+        // }
+ 
+        if (prevTime < time(NULL)) {
+            printf("%i\n", fps);
+
+            fps = 0;
+            prevTime++;
+        }
+        else {
+            fps++;
+        }
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -87,4 +111,6 @@ int main() {
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
     glfwDestroyWindow(window);
+
+    return 0;
 }

@@ -1,10 +1,12 @@
 #include "physics.h"
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 // Generates random float that can't be zero
 float randFloat(float max) {
-    return ((float) rand()) + 1 / (float) RAND_MAX * max;
+    return (((float) rand()) + 1) / (float) RAND_MAX * max;
 }
 
 float randFloatRange(float min, float max) {
@@ -31,18 +33,28 @@ float calcDistance(float diffX, float diffY) {
 }
 
 void calculatePhysics(Particle* particles, int particleAmount) {
-    for (int i = 0; i < particleAmount; i++) {
-        for (int j = 0; j < particleAmount; j++) {
-            float diffX = particle[i]->posX - particle[j]->posX;
-            float diffY = particle[i]->posY - particle[j]->posY;
-            float gravFactor = particles[i].mass * particles[j].mass / pow(calcDistance(diffX, diffY), 3);
-            particles[i].velX += gravFactor * diffX;
-            particles[i].velY += gravFactor * diffY;
+    // printf("%f - %f\n", particles[1].posX, particles[1].posY);
 
-            particles[i].posX += particles[i].velX;
-            particles[i].posY += particles[i].velY;
+    for (int i = 0; i < particleAmount; i++) {
+        // printf("%f - %f\n", particles[i].posX, particles[i].posY);
+
+        for (int j = 0; j < particleAmount; j++) {
+            if (i == j) {
+                continue;
+            }
+            float diffX = particles[i].posX - particles[j].posX;
+            float diffY = particles[i].posY - particles[j].posY;
+            float distance = calcDistance(diffX, diffY);
+            if (distance > 50) {
+                float gravFactor = - particles[j].mass / pow(distance, 3);
+                particles[i].velX += gravFactor * diffX;
+                particles[i].velY += gravFactor * diffY;
+
+                particles[i].posX += particles[i].velX;
+                particles[i].posY += particles[i].velY;
+            } 
+            
         }
     }
-
 
 }
