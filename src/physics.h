@@ -13,6 +13,6 @@ typedef struct particle {
 } Particle;
 
 void initializeParticles(Particle* particles, int particleAmount);
-void calculatePhysics(Particle* particles, int particleAmount);
+void calculatePhysics(Particle* particles, int particleAmount, int bufSize);
 
 #endif

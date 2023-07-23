@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
 
 // Generates random float that can't be zero
 float randFloat(float max) {
@@ -41,9 +42,16 @@ float calcDistance(float diffX, float diffY) {
     return sqrt(powTwo(diffX) + powTwo(diffY));
 }
 
-void calculatePhysics(Particle* particles, int particleAmount) {
+float timedifference_msec(struct timeval t0, struct timeval t1) {
+    return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
+}
+
+void calculatePhysics(Particle* particles, int particleAmount, int bufSize) {
+    struct timeval t0;
+    struct timeval t1;
+    gettimeofday(&t0, 0);
+
     // Creating buffer arrays
-    int bufSize = particleAmount / 2.0 * (particleAmount - 1);
     float gravFactorBuf[bufSize];
     float diffXBuf[bufSize];
     float diffYBuf[bufSize];
@@ -57,8 +65,7 @@ void calculatePhysics(Particle* particles, int particleAmount) {
 
             float distance = calcDistance(diffX, diffY);
 
-            // Maybe (distance > 50) * gravFactor would be faster 
-            gravFactorBuf[bufIndex] = distance > 50 ? -particles[j].mass / powThree(distance) : 0;
+            gravFactorBuf[bufIndex] = (distance > 50) * (-particles[j].mass / powThree(distance));
 
             diffXBuf[bufIndex] = diffX;
             diffYBuf[bufIndex] = diffY;
@@ -67,7 +74,6 @@ void calculatePhysics(Particle* particles, int particleAmount) {
         }
     }
 
-    // printf("test\n");
     // Selecting from buffer array
     int topStartIndex = 0;
 
@@ -75,6 +81,7 @@ void calculatePhysics(Particle* particles, int particleAmount) {
         // Top half
         if (i < particleAmount - 1) {
             for (int j = topStartIndex;; j++) {
+                // O: make this into an array before hand
                 if (j >= topStartIndex + particleAmount - i - 2) {
                     topStartIndex = j + 1;
                     break;
@@ -94,7 +101,6 @@ void calculatePhysics(Particle* particles, int particleAmount) {
                 particles[i].velX += gravFactorBuf[l] * -diffXBuf[l];
                 particles[i].velY += gravFactorBuf[l] * -diffYBuf[l];
 
-                // maybe l += k--
                 k--;
                 l += k;
             }
@@ -104,10 +110,14 @@ void calculatePhysics(Particle* particles, int particleAmount) {
         particles[i].posY += particles[i].velY;
     }
 
-    // printf("%f - %f\n", particles[5].velX, particles[5].velY);
+    gettimeofday(&t1, 0);
+    printf("%f\n", timedifference_msec(t0, t1));
 }
 
 // void calculatePhysics(Particle* particles, int particleAmount) {
+//     struct timeval t0;
+//     struct timeval t1;
+//     gettimeofday(&t0, 0);
 //     // printf("%f - %f\n", particles[1].posX, particles[1].posY);
 
 //     for (int i = 0; i < particleAmount; i++) {
@@ -133,5 +143,8 @@ void calculatePhysics(Particle* particles, int particleAmount) {
 //         particles[i].posY += particles[i].velY;
 //     }
 //         // printf("%f - %f\n", particles[5].velX, particles[5].velY);
+        
+//     gettimeofday(&t1, 0);
+//     printf("%f\n", timedifference_msec(t0, t1));
 
 // }

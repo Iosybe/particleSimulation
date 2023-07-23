@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <sys/resource.h>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,7 +11,7 @@
 #include "shapes.h"
 #include "physics.h"
 
-#define NOP 100
+#define NOP 5000
 #define SEGMENTS 128
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -20,6 +21,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 int main() {
+    const rlim_t kStackSize = 256 * 1024 * 1024;
+    struct rlimit rl;
+    int result;
+
+    result = getrlimit(RLIMIT_STACK, &rl);
+    if (result == 0)
+    {
+        if (rl.rlim_cur < kStackSize)
+        {
+            rl.rlim_cur = kStackSize;
+            result = setrlimit(RLIMIT_STACK, &rl);
+            if (result != 0)
+            {
+                fprintf(stderr, "setrlimit returned result = %d\n", result);
+            }
+        }
+    }
+
     if (!glfwInit()) {
         fprintf( stderr, "Failed to initialize GLFW\n" );
         return -1;
@@ -65,11 +84,12 @@ int main() {
 
     Particle particles[NOP];
     initializeParticles(particles, NOP);
+    int bufSize = NOP / 2.0 * (NOP - 1);
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
 
-    time_t prevTime = time(NULL);
-    int fps = 0;
+    // time_t prevTime = time(NULL);
+    // int fps = 0;
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -80,7 +100,7 @@ int main() {
         //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
         // }
 
-        calculatePhysics(particles, NOP);
+        calculatePhysics(particles, NOP, bufSize);
 
         // return 1;
 
@@ -92,15 +112,15 @@ int main() {
         //     glfwPollEvents();
         // }
  
-        if (prevTime < time(NULL)) {
-            printf("%i\n", fps);
+        // if (prevTime < time(NULL)) {
+        //     printf("%i\n", fps);
 
-            fps = 0;
-            prevTime++;
-        }
-        else {
-            fps++;
-        }
+        //     fps = 0;
+        //     prevTime++;
+        // }
+        // else {
+        //     fps++;
+        // }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
