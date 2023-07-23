@@ -10,7 +10,8 @@
 #include "shapes.h"
 #include "physics.h"
 
-#define NOP 2000
+#define NOP 100
+#define SEGMENTS 128
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -57,8 +58,8 @@ int main() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    GLfloat circle[128 * 9];
-    buildCircle(circle, 4.0, 128);
+    GLfloat circle[SEGMENTS * 9];
+    buildCircle(circle, 4.0, SEGMENTS);
 
     srand(time(NULL));
 
@@ -84,7 +85,7 @@ int main() {
         // return 1;
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, 128, particles[i].posX, particles[i].posY);
+            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY);
         }
 
         // while (prevTime + 100 > clock()) {
@@ -100,7 +101,6 @@ int main() {
         else {
             fps++;
         }
-
 
         glfwSwapBuffers(window);
         glfwPollEvents();
