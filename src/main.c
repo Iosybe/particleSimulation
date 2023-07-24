@@ -11,7 +11,6 @@
 #include "shapes.h"
 #include "physics.h"
 
-#define NOP 5000
 #define SEGMENTS 128
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -21,23 +20,23 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 int main() {
-    const rlim_t kStackSize = 256 * 1024 * 1024;
-    struct rlimit rl;
-    int result;
+    // const rlim_t kStackSize = 256 * 1024 * 1024;
+    // struct rlimit rl;
+    // int result;
 
-    result = getrlimit(RLIMIT_STACK, &rl);
-    if (result == 0)
-    {
-        if (rl.rlim_cur < kStackSize)
-        {
-            rl.rlim_cur = kStackSize;
-            result = setrlimit(RLIMIT_STACK, &rl);
-            if (result != 0)
-            {
-                fprintf(stderr, "setrlimit returned result = %d\n", result);
-            }
-        }
-    }
+    // result = getrlimit(RLIMIT_STACK, &rl);
+    // if (result == 0)
+    // {
+    //     if (rl.rlim_cur < kStackSize)
+    //     {
+    //         rl.rlim_cur = kStackSize;
+    //         result = setrlimit(RLIMIT_STACK, &rl);
+    //         if (result != 0)
+    //         {
+    //             fprintf(stderr, "setrlimit returned result = %d\n", result);
+    //         }
+    //     }
+    // }
 
     if (!glfwInit()) {
         fprintf( stderr, "Failed to initialize GLFW\n" );
@@ -83,8 +82,7 @@ int main() {
     srand(time(NULL));
 
     Particle particles[NOP];
-    initializeParticles(particles, NOP);
-    int bufSize = NOP / 2.0 * (NOP - 1);
+    initializeParticles(particles);
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
 
@@ -100,7 +98,7 @@ int main() {
         //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
         // }
 
-        calculatePhysics(particles, NOP, bufSize);
+        calculatePhysics(particles);
 
         // return 1;
 

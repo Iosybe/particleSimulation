@@ -1,6 +1,9 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
+#define NOP 5000
+#define BUFSIZE (int) (NOP / 2.0 * (NOP - 1))
+
 typedef struct particle {
     int id;
     float mass;
@@ -12,7 +15,7 @@ typedef struct particle {
     float velY;
 } Particle;
 
-void initializeParticles(Particle* particles, int particleAmount);
-void calculatePhysics(Particle* particles, int particleAmount, int bufSize);
+void initializeParticles(Particle* particles);
+void calculatePhysics(Particle* particles);
 
 #endif
