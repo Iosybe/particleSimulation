@@ -12,11 +12,36 @@
 #include "physics.h"
 
 #define SEGMENTS 128
+GLfloat circle[SEGMENTS * 9];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 
     UNUSED(window);
+}
+
+float transX = 0;
+float transY = 0;
+
+float prevPosX = 0;
+float prevPosY = 0;
+
+static void cursor_position_callback(GLFWwindow* window, double curPosX, double curPosY) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        prevPosX = width / 2;
+        prevPosY = height / 2;
+        return;
+    }
+    fprintf(stderr, "trans = %f, %f\n", transX, transY);
+    // drawCircle(circle, SEGMENTS, 2 * xpos - width, -2 * ypos + height);
+    transX += 2 * (curPosX - prevPosX);
+    transY += 2 * (prevPosY - curPosY);
+    
+    prevPosX = curPosX;
+    prevPosY = curPosY;
+
 }
 
 int main() {
@@ -55,6 +80,8 @@ int main() {
     window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
+    // miss programmatically uitzetten zodat ie niet polled als knop niet ingedrukt?
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -76,7 +103,7 @@ int main() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    GLfloat circle[SEGMENTS * 9];
+    
     buildCircle(circle, 4.0, SEGMENTS);
 
     srand(time(NULL));
@@ -98,12 +125,12 @@ int main() {
         //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
         // }
 
-        calculatePhysics(particles);
+        // calculatePhysics(particles);
 
-        // return 1;
+        // return 1; 
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY);
+            drawCircle(circle, SEGMENTS, particles[i].posX + transX, particles[i].posY + transY);
         }
 
         // while (prevTime + 100 > clock()) {
@@ -120,8 +147,8 @@ int main() {
         //     fps++;
         // }
 
-        glfwSwapBuffers(window);
         glfwPollEvents();
+        glfwSwapBuffers(window);
 
     }
     while( glfwWindowShouldClose(window) == 0);
