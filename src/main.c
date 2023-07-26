@@ -25,16 +25,13 @@ float transY = 0;
 
 double prevPosX, prevPosY;
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-{
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         glfwGetCursorPos(window, &prevPosX, &prevPosY);
     }
 }
 
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         prevPosX = 0;
         prevPosY = 0;
@@ -76,6 +73,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
+    // glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
 
     // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
