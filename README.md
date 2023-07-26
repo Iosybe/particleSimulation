@@ -1,8 +1,8 @@
 # Todo:
 
-## Iosybe
+#### Iosybe
 - [] Threading
-## Boris00035
+#### Boris00035
 - [] Executable flags
-## Open
+#### Open
 - [] Clean up global variables (states?)
