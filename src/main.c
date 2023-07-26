@@ -23,25 +23,28 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 float transX = 0;
 float transY = 0;
 
-float prevPosX = 0;
-float prevPosY = 0;
+double prevPosX, prevPosY;
 
-static void cursor_position_callback(GLFWwindow* window, double curPosX, double curPosY) {
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        glfwGetCursorPos(window, &prevPosX, &prevPosY);
+    }
+}
+
+static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
     int width, height;
     glfwGetWindowSize(window, &width, &height);
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        prevPosX = width / 2;
-        prevPosY = height / 2;
+        prevPosX = 0;
+        prevPosY = 0;
         return;
     }
-    fprintf(stderr, "trans = %f, %f\n", transX, transY);
-    // drawCircle(circle, SEGMENTS, 2 * xpos - width, -2 * ypos + height);
-    transX += 2 * (curPosX - prevPosX);
-    transY += 2 * (prevPosY - curPosY);
+    transX += 2 * (cursorPosX - prevPosX);
+    transY += 2 * (prevPosY - cursorPosY);
     
-    prevPosX = curPosX;
-    prevPosY = curPosY;
-
+    prevPosX = cursorPosX;
+    prevPosY = cursorPosY;
 }
 
 int main() {
@@ -82,6 +85,7 @@ int main() {
     glfwSetWindowSizeCallback(window, window_size_callback);
     // miss programmatically uitzetten zodat ie niet polled als knop niet ingedrukt?
     glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -125,7 +129,7 @@ int main() {
         //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
         // }
 
-        // calculatePhysics(particles);
+        calculatePhysics(particles);
 
         // return 1; 
 
