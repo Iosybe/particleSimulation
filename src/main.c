@@ -12,11 +12,39 @@
 #include "physics.h"
 
 #define SEGMENTS 128
+GLfloat circle[SEGMENTS * 9];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 
     UNUSED(window);
+}
+
+float transX = 0;
+float transY = 0;
+
+double prevPosX, prevPosY;
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        glfwGetCursorPos(window, &prevPosX, &prevPosY);
+    }
+}
+
+static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
+        prevPosX = 0;
+        prevPosY = 0;
+        return;
+    }
+    transX += 2 * (cursorPosX - prevPosX);
+    transY += 2 * (prevPosY - cursorPosY);
+    
+    prevPosX = cursorPosX;
+    prevPosY = cursorPosY;
 }
 
 int main() {
@@ -55,6 +83,9 @@ int main() {
     window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
+    // miss programmatically uitzetten zodat ie niet polled als knop niet ingedrukt?
+    glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -76,7 +107,7 @@ int main() {
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
-    GLfloat circle[SEGMENTS * 9];
+    
     buildCircle(circle, 4.0, SEGMENTS);
 
     srand(time(NULL));
@@ -100,10 +131,10 @@ int main() {
 
         calculatePhysics(particles);
 
-        // return 1;
+        // return 1; 
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY);
+            drawCircle(circle, SEGMENTS, particles[i].posX + transX, particles[i].posY + transY);
         }
 
         // while (prevTime + 100 > clock()) {
@@ -120,8 +151,8 @@ int main() {
         //     fps++;
         // }
 
-        glfwSwapBuffers(window);
         glfwPollEvents();
+        glfwSwapBuffers(window);
 
     }
     while( glfwWindowShouldClose(window) == 0);

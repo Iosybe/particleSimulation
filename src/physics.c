@@ -69,8 +69,8 @@ void calculatePhysics(Particle* particles) {
                 particles[i].velX += gravFactor * diffX;
                 particles[i].velY += gravFactor * diffY;
 
-                particles[j].velX += gravFactor * -diffX;
-                particles[j].velY += gravFactor * -diffY;
+                particles[j].velX -= gravFactor * diffX;
+                particles[j].velY -= gravFactor * diffY;
             }
         }
 
