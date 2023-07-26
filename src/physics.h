@@ -1,7 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#define NOP 5000
+#define NOP 1000
 #define BUFSIZE (int) (NOP / 2.0 * (NOP - 1))
 
 typedef struct particle {
