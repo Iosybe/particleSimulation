@@ -44,7 +44,10 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     prevPosY = cursorPosY;
 }
 
-bool fullscreenState = 0;
+int fullscreenState = 0;
+
+double cursorZoomPosX = 0.0;
+double cursorZoomPosY = 0.0;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
@@ -63,10 +66,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 
     if (key == GLFW_KEY_MINUS && action == GLFW_PRESS) {
+        // int windowWidth, windowHeight;
+        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
+        // cursorZoomPosX -= windowWidth * zoomScale / 2;
+        // cursorZoomPosY -= windowHeight * zoomScale / 2;
         zoomScale += 0.1;
     }
 
     if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
+        // int windowWidth, windowHeight;
+        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
+        // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
+        // cursorZoomPosX -= windowWidth * zoomScale / 2;
+        // cursorZoomPosY -= windowHeight * zoomScale / 2;
         zoomScale -= 0.1;
     }
 }
@@ -146,6 +159,8 @@ int main() {
     // time_t prevTime = time(NULL);
     // int fps = 0;
 
+    
+
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -159,8 +174,13 @@ int main() {
 
         // return 1; 
 
+        double cursorPosX, cursorPosY;
+        glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
+
+        // drawCircle(circle, SEGMENTS, cursorPosX, -cursorPosY, 5 );
+
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX * zoomScale + transX, particles[i].posY * zoomScale + transY, particles[i].mass * zoomScale);
+            drawCircle(circle, SEGMENTS, (particles[i].posX - cursorZoomPosX) * zoomScale + cursorZoomPosX + transX, (particles[i].posY + cursorZoomPosY) * zoomScale + cursorZoomPosY + transY, particles[i].mass * zoomScale);
         }
 
         // while (prevTime + 100 > clock()) {
