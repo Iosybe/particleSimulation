@@ -23,6 +23,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 float transX = 0;
 float transY = 0;
 
+float zoomScale = 1.0;
+
 double prevPosX, prevPosY;
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
@@ -33,8 +35,6 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        prevPosX = 0;
-        prevPosY = 0;
         return;
     }
     transX += 2 * (cursorPosX - prevPosX);
@@ -42,6 +42,33 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     
     prevPosX = cursorPosX;
     prevPosY = cursorPosY;
+}
+
+bool fullscreenState = 0;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* primaryMonitorMode = glfwGetVideoMode(primaryMonitor);
+        
+        if (fullscreenState) {
+            glfwSetWindowMonitor(window, NULL, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
+            fullscreenState = !fullscreenState;
+        }
+        else {
+            glfwSetWindowMonitor(window, primaryMonitor, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
+            fullscreenState = !fullscreenState;
+        }
+    }
+
+    if (key == GLFW_KEY_MINUS && action == GLFW_PRESS) {
+        zoomScale += 0.1;
+    }
+
+    if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
+        zoomScale -= 0.1;
+    }
 }
 
 int main() {
@@ -79,11 +106,12 @@ int main() {
 
     GLFWwindow* window;
     window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
-    // miss programmatically uitzetten zodat ie niet polled als knop niet ingedrukt?
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -106,7 +134,7 @@ int main() {
     glBindVertexArray(VertexArrayID);
 
     
-    buildCircle(circle, 4.0, SEGMENTS);
+    buildUnitCircle(circle, SEGMENTS);
 
     srand(time(NULL));
 
@@ -132,7 +160,7 @@ int main() {
         // return 1; 
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX + transX, particles[i].posY + transY);
+            drawCircle(circle, SEGMENTS, particles[i].posX * zoomScale + transX, particles[i].posY * zoomScale + transY, particles[i].mass * zoomScale);
         }
 
         // while (prevTime + 100 > clock()) {

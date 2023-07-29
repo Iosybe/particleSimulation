@@ -18,7 +18,7 @@ void aspect_ratio_correction(GLfloat* circle, int segments) {
     }
 }
 
-void buildCircle(GLfloat* circle, float radius, int segments) {
+void buildUnitCircle(GLfloat* circle, int segments) {
     float angleInterval = M_PI * 2 / segments;
 
     for (int i = 0; i < segments; i++) {
@@ -30,32 +30,32 @@ void buildCircle(GLfloat* circle, float radius, int segments) {
         circle[j + 1] = 0.0f;
         circle[j + 2] = 0.0f;
 
-        circle[j + 3] = radius * cos(currentAngle - angleInterval);
-        circle[j + 4] = radius * sin(currentAngle - angleInterval);
+        circle[j + 3] = cos(currentAngle - angleInterval);
+        circle[j + 4] = sin(currentAngle - angleInterval);
         circle[j + 5] = 0.0f;
 
         // kan sneller. remember prev vertex.
-        circle[j + 6] = radius * cos(currentAngle);
-        circle[j + 7] = radius * sin(currentAngle);
+        circle[j + 6] = cos(currentAngle);
+        circle[j + 7] = sin(currentAngle);
         circle[j + 8] = 0.0f;
     }
 }
 
-void drawCircle(GLfloat* templateCircle, int segments, float centerX, float centerY) {
+void drawCircle(GLfloat* templateCircle, int segments, float centerX, float centerY, float radius) {
     GLfloat circle[segments * 9];
 
     for (int i = 0; i < segments * 9; i += 9) {
 
-        circle[i + 0] = templateCircle[i + 0] + centerX;
-        circle[i + 1] = templateCircle[i + 1] + centerY;
+        circle[i + 0] = radius * templateCircle[i + 0] + centerX;
+        circle[i + 1] = radius * templateCircle[i + 1] + centerY;
         circle[i + 2] = 0.0f;
 
-        circle[i + 3] = templateCircle[i + 3] + centerX;
-        circle[i + 4] = templateCircle[i + 4] + centerY;
+        circle[i + 3] = radius * templateCircle[i + 3] + centerX;
+        circle[i + 4] = radius * templateCircle[i + 4] + centerY;
         circle[i + 5] = 0.0f;
 
-        circle[i + 6] = templateCircle[i + 6] + centerX;
-        circle[i + 7] = templateCircle[i + 7] + centerY;
+        circle[i + 6] = radius * templateCircle[i + 6] + centerX;
+        circle[i + 7] = radius * templateCircle[i + 7] + centerY;
         circle[i + 8] = 0.0f;
     }
 

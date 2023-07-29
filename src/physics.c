@@ -16,15 +16,18 @@ float randFloatRange(float min, float max) {
 
 void initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
+        float x = randFloatRange(-75.0, 75.0);
+        float y = randFloatRange(-75.0, 75.0);
+        float mass = randFloatRange(0, 5.0);
         particles[i] = {
             i,
-            randFloat(5.0),
+            mass,
 
-            randFloatRange(-500.0, 500.0),
-            randFloatRange(-500.0, 500.0),
+            x,
+            y,
 
-            0.0,
-            0.0,
+            y / 20.0,
+            -x / 20.0,
         };
     }
 }
@@ -63,7 +66,7 @@ void calculatePhysics(Particle* particles) {
 
             float distance = calcDistance(diffX, diffY);
 
-            if (distance > 50) {
+            if (distance > 20) {
                 float gravFactor = -particles[j].mass / powThree(distance);
 
                 particles[i].velX += gravFactor * diffX;
