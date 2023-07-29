@@ -44,7 +44,7 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     prevPosY = cursorPosY;
 }
 
-bool fullscreenState = 0;
+int fullscreenState = 0;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 

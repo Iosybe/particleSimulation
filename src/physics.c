@@ -19,7 +19,7 @@ void initializeParticles(Particle* particles) {
         float x = randFloatRange(-75.0, 75.0);
         float y = randFloatRange(-75.0, 75.0);
         float mass = randFloatRange(0, 5.0);
-        particles[i] = {
+        particles[i] = (Particle) {
             i,
             mass,
 
