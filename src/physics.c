@@ -93,7 +93,7 @@ void* particleInteractions(void* args) {
 
         float distance = calcDistance(diffX, diffY);
 
-        if (distance > 50) {
+        if (distance > 20) {
             float tempGravFactor = 1 / powThree(distance);
 
             float gravFactorI= -particleTwo->mass * tempGravFactor;
