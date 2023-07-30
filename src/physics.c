@@ -5,6 +5,8 @@
 #include <math.h>
 #include <sys/time.h>
 
+CombCouple* combArray;
+
 // Generates random float that can't be zero
 float randFloat(float max) {
     return (((float) rand()) + 1) / (float) RAND_MAX * max;
@@ -14,7 +16,7 @@ float randFloatRange(float min, float max) {
     return ((float) rand()) / (float) RAND_MAX * (max * 2) + min;
 }
 
-void initializeParticles(Particle* particles) {
+int initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
         particles[i] = (Particle) {
             i,
@@ -29,9 +31,36 @@ void initializeParticles(Particle* particles) {
 
         pthread_mutex_init(&particles[i].mutex, NULL);
     }
+
+    combArray = (CombCouple*) malloc(sizeof(CombCouple) * NOI);
+
+    if (combArray == NULL) {
+        return 1;
+    }
+
+    int combIndex = 0;
+
+    for (int i = 0; i < NOP; i++) {
+        for (int j = i + 1; j < NOP; j++) {
+            combArray[combIndex] = (CombCouple) {
+                particles + i,
+                particles + j,
+            };
+
+            combIndex++;
+        }
+    }
+
+    return 0;
 }
 
-// destroy particles function
+void destroyParicles(Particle* particles) {
+    for (int i = 0; i < NOP; i++) {
+        pthread_mutex_destroy(&particles[i].mutex);
+    }
+
+    free(combArray);
+}
 
 // Optimization because pow() is slow
 float powTwo(float n) {
@@ -51,30 +80,32 @@ float timedifference_msec(struct timeval t0, struct timeval t1) {
 }
 
 void* particleInteractions(void* args) {
-    Particle* particles = ((InteractionData*) args)->particles;
-    int i = ((InteractionData*) args)->i;
+    InteractionData* interactionData = (InteractionData*) args;
 
-    for (int j = i + 1; j < NOP; j++) {
-        float diffX = particles[i].posX - particles[j].posX;
-        float diffY = particles[i].posY - particles[j].posY;
+    for (CombCouple* particles = interactionData->startPointer; particles <= interactionData->endPointer; particles++) {
+        Particle* particleOne = particles->particleOne;
+        Particle* particleTwo = particles->particleTwo;
+
+        float diffX = particleOne->posX - particleTwo->posX;
+        float diffY = particleOne->posY - particleTwo->posY;
 
         float distance = calcDistance(diffX, diffY);
 
         if (distance > 50) {
             float tempGravFactor = 1 / powThree(distance);
 
-            float gravFactorI= -particles[j].mass * tempGravFactor;
-            float gravFactorJ= -particles[i].mass * tempGravFactor;
+            float gravFactorI= -particleTwo->mass * tempGravFactor;
+            float gravFactorJ= -particleOne->mass * tempGravFactor;
 
-            pthread_mutex_lock(&particles[i].mutex);
-            particles[i].velX += gravFactorI * diffX;
-            particles[i].velY += gravFactorI * diffY;
-            pthread_mutex_unlock(&particles[i].mutex);
+            pthread_mutex_lock(&particleOne->mutex);
+            particleOne->velX += gravFactorI * diffX;
+            particleOne->velY += gravFactorI * diffY;
+            pthread_mutex_unlock(&particleOne->mutex);
 
-            pthread_mutex_lock(&particles[j].mutex);
-            particles[j].velX -= gravFactorJ * diffX;
-            particles[j].velY -= gravFactorJ * diffY;
-            pthread_mutex_unlock(&particles[j].mutex);
+            pthread_mutex_lock(&particleTwo->mutex);
+            particleTwo->velX -= gravFactorJ * diffX;
+            particleTwo->velY -= gravFactorJ * diffY;
+            pthread_mutex_unlock(&particleTwo->mutex);
         }
     }
 
@@ -86,25 +117,40 @@ void calculatePhysics(Particle* particles) {
     struct timeval t1;
     gettimeofday(&t0, 0);
 
-    pthread_t threadIds[NOP];
-    InteractionData interactionDatas[NOP];
+    pthread_t threadIds[NOT];
+    InteractionData interactionDatas[NOT];
 
-    for (int i = 0; i < NOP; i++) {
+    int i = 0;
+    CombCouple* p = combArray;
+
+    for (; p + NOIPT - 1 < combArray + NOI; p += NOIPT, i++) {
         interactionDatas[i] = (InteractionData) {
-            i,
-            particles,
+            p,
+            p + NOIPT - 1,
         };
 
         pthread_create(&threadIds[i], NULL, particleInteractions, (void*) (interactionDatas + i));
     }
 
-    for (int i = 0; i < NOP; i++) {
-        pthread_join(threadIds[i], NULL);
+    if (p < combArray + NOI) {
+        interactionDatas[i] = (InteractionData) {
+            p,
+            combArray + NOI - 1,
+        };
 
-        particles[i].posX += particles[i].velX;
-        particles[i].posY += particles[i].velY;
+        pthread_create(&threadIds[i], NULL, particleInteractions, (void*) (interactionDatas + i));
+
+        i++;
     }
 
+    for (int j = 0; j < i; j++) {
+        pthread_join(threadIds[j], NULL);
+    }
+
+    for (int j = 0; j < NOP; j++) {
+        particles[j].posX += particles[j].velX;
+        particles[j].posY += particles[j].velY;
+    }
 
     gettimeofday(&t1, 0);
     printf("%f\n", timedifference_msec(t0, t1));
