@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include "loadShader.hpp"
+#include "glfwCallbacks.h"
 #include "shapes.h"
 #include "physics.h"
 
