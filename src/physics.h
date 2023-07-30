@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 
-#define NOP 5000 // Number of particle
+#define NOP 1000 // Number of particle
 
 #define NOI (int) (NOP / 2.0 * (NOP - 1)) // Number of interactions
 #define NOIPT 60000 // Number of interactions per thread

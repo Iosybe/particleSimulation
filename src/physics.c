@@ -18,15 +18,17 @@ float randFloatRange(float min, float max) {
 
 int initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
+        float x = randFloatRange(-100.0, 100.0);
+        float y = randFloatRange(-100.0, 100.0);
         particles[i] = (Particle) {
             i,
             randFloat(5.0),
 
-            randFloatRange(-500.0, 500.0),
-            randFloatRange(-500.0, 500.0),
+            x,
+            y,    
 
-            0.0,
-            0.0,
+            -y / 100.0,
+            x / 100.0,
         };
 
         pthread_mutex_init(&particles[i].mutex, NULL);
