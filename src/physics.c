@@ -16,8 +16,8 @@ float randFloatRange(float min, float max) {
 
 void initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
-        float x = randFloatRange(-75.0, 75.0);
-        float y = randFloatRange(-75.0, 75.0);
+        float x = randFloatRange(-100.0, 100.0);
+        float y = randFloatRange(-100.0, 100.0);
         float mass = randFloatRange(0, 5.0);
         particles[i] = (Particle) {
             i,
@@ -26,8 +26,8 @@ void initializeParticles(Particle* particles) {
             x,
             y,
 
-            y / 20.0,
-            -x / 20.0,
+            y / 100.0,
+            -x / 100.0,
         };
     }
 }
