@@ -18,7 +18,7 @@ void initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
         float x = randFloatRange(-100.0, 100.0);
         float y = randFloatRange(-100.0, 100.0);
-        float mass = randFloatRange(0, 5.0);
+        float mass = randFloat(5.0);
         particles[i] = (Particle) {
             i,
             mass,
