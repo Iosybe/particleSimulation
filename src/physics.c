@@ -5,6 +5,9 @@
 #include <math.h>
 #include <sys/time.h>
 
+const int NOI = (int) (NOP / 2.0 * (NOP - 1)); // Number of interactions
+const int NOT = NOI / NOIPT + (NOI % NOIPT > 0); // Number of threads
+
 CombCouple* combArray;
 
 // Generates random float that can't be zero
