@@ -16,6 +16,15 @@
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
 
+ViewportStateStruct viewportState = (ViewportStateStruct) {
+    0.0, // transX
+    0.0, // transY
+    1.0, // zoomScale
+    0.0, // prevPosX
+    0.0 // prevPosY
+};
+
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
