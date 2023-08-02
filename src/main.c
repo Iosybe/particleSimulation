@@ -11,9 +11,11 @@
 #include "glfwCallbacks.h"
 #include "shapes.h"
 #include "physics.h"
+#include "globalStructs.h"
 
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -21,16 +23,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     UNUSED(window);
 }
 
-float transX = 0;
-float transY = 0;
-
-float zoomScale = 1.0;
-
-double prevPosX, prevPosY;
-
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        glfwGetCursorPos(window, &prevPosX, &prevPosY);
+        glfwGetCursorPos(window, &viewportState.prevPosX, &viewportState.prevPosY);
     }
 }
 
@@ -38,11 +33,11 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
     }
-    transX += 2 * (cursorPosX - prevPosX);
-    transY += 2 * (prevPosY - cursorPosY);
+    viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX);
+    viewportState.transY += 2 * (viewportState.prevPosY - cursorPosY);
     
-    prevPosX = cursorPosX;
-    prevPosY = cursorPosY;
+    viewportState.prevPosX = cursorPosX;
+    viewportState.prevPosY = cursorPosY;
 }
 
 int fullscreenState = 0;
@@ -72,7 +67,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
         // cursorZoomPosX -= windowWidth * zoomScale / 2;
         // cursorZoomPosY -= windowHeight * zoomScale / 2;
-        zoomScale += 0.1;
+        viewportState.zoomScale += 0.1;
     }
 
     if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
@@ -81,7 +76,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
         // cursorZoomPosX -= windowWidth * zoomScale / 2;
         // cursorZoomPosY -= windowHeight * zoomScale / 2;
-        zoomScale -= 0.1;
+        viewportState.zoomScale -= 0.1;
     }
 }
 
@@ -181,7 +176,7 @@ int main() {
         // drawCircle(circle, SEGMENTS, cursorPosX, -cursorPosY, 5 );
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, (particles[i].posX - cursorZoomPosX) * zoomScale + cursorZoomPosX + transX, (particles[i].posY + cursorZoomPosY) * zoomScale + cursorZoomPosY + transY, particles[i].mass * zoomScale);
+            drawCircle(circle, SEGMENTS, (particles[i].posX) * viewportState.zoomScale + viewportState.transX, (particles[i].posY) * viewportState.zoomScale + viewportState.transY, particles[i].mass * viewportState.zoomScale);
         }
 
         // while (prevTime + 100 > clock()) {

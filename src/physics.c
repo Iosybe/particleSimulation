@@ -1,4 +1,5 @@
 #include "physics.h"
+#include "globalStructs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
