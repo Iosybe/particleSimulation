@@ -1,6 +1,3 @@
-#ifndef GLOBALSTRUCTS_H
-#define GLOBALSTRUCTS_H
-
 typedef struct viewportStateStruct {
     float transX;
     float transY;
@@ -18,6 +15,3 @@ typedef struct viewportStateStruct {
     0.0, // prevPosX
     0.0 // prevPosY
 };
-
-
-#endif
