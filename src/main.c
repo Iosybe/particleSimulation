@@ -16,14 +16,6 @@
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
 
-ViewportStateStruct viewportState = (ViewportStateStruct) {
-    0.0, // transX
-    0.0, // transY
-    1.0, // zoomScale
-    0.0, // prevPosX
-    0.0 // prevPosY
-};
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -49,24 +41,19 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     viewportState.prevPosY = cursorPosY;
 }
 
-int fullscreenState = 0;
-
-double cursorZoomPosX = 0.0;
-double cursorZoomPosY = 0.0;
-
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     if (key == GLFW_KEY_F && action == GLFW_PRESS) {
         GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* primaryMonitorMode = glfwGetVideoMode(primaryMonitor);
         
-        if (fullscreenState) {
+        if (viewportState.fullscreenState) {
             glfwSetWindowMonitor(window, NULL, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
-            fullscreenState = !fullscreenState;
+            viewportState.fullscreenState = !viewportState.fullscreenState;
         }
         else {
             glfwSetWindowMonitor(window, primaryMonitor, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
-            fullscreenState = !fullscreenState;
+            viewportState.fullscreenState = !viewportState.fullscreenState;
         }
     }
 
@@ -185,7 +172,7 @@ int main() {
         // drawCircle(circle, SEGMENTS, cursorPosX, -cursorPosY, 5 );
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, (particles[i].posX) * viewportState.zoomScale + viewportState.transX, (particles[i].posY) * viewportState.zoomScale + viewportState.transY, particles[i].mass * viewportState.zoomScale);
+            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass * viewportState.zoomScale);
         }
 
         // while (prevTime + 100 > clock()) {

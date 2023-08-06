@@ -1,6 +1,8 @@
 #undef __STRICT_ANSI__
 #include "shapes.h"
+#include "globalStructs.h"
 #include <math.h>
+
 
 int width = 500;
 int height = 500;
@@ -12,7 +14,7 @@ void window_size_callback(GLFWwindow* window, int _width, int _height) {
     UNUSED(window);
 }
 
-void aspect_ratio_correction(GLfloat* circle, int segments) {
+void rawCircleCorrection(GLfloat* circle, int segments) {
     for (int i = 0; i < segments * 9; i += 3) {
         circle[i] = circle[i] / width;
         circle[i + 1] = circle[i + 1] / height; 
@@ -42,25 +44,26 @@ void buildUnitCircle(GLfloat* circle, int segments) {
     }
 }
 
-void drawCircle(GLfloat* templateCircle, int segments, float centerX, float centerY, float radius) {
+void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, float radius) {
     GLfloat circle[segments * 9];
+
+    float correctedPosX = posX * viewportState.zoomScale / width + viewportState.transX;
+    float correctedPosY = posY * viewportState.zoomScale / height + viewportState.transY;
 
     for (int i = 0; i < segments * 9; i += 9) {
 
-        circle[i + 0] = radius * templateCircle[i + 0] + centerX;
-        circle[i + 1] = radius * templateCircle[i + 1] + centerY;
+        circle[i + 0] = radius * templateCircle[i + 0] + correctedPosX;
+        circle[i + 1] = radius * templateCircle[i + 1] + correctedPosY;
         circle[i + 2] = 0.0f;
 
-        circle[i + 3] = radius * templateCircle[i + 3] + centerX;
-        circle[i + 4] = radius * templateCircle[i + 4] + centerY;
+        circle[i + 3] = radius * templateCircle[i + 3] + correctedPosX;
+        circle[i + 4] = radius * templateCircle[i + 4] + correctedPosY;
         circle[i + 5] = 0.0f;
 
-        circle[i + 6] = radius * templateCircle[i + 6] + centerX;
-        circle[i + 7] = radius * templateCircle[i + 7] + centerY;
+        circle[i + 6] = radius * templateCircle[i + 6] + correctedPosX;
+        circle[i + 7] = radius * templateCircle[i + 7] + correctedPosY;
         circle[i + 8] = 0.0f;
     }
-
-    aspect_ratio_correction(circle, segments);
 
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
