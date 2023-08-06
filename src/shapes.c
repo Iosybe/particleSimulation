@@ -36,8 +36,8 @@ void buildUnitCircle(GLfloat* circle, int segments) {
 void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, float radius) {
     GLfloat circle[segments * 9];
 
-    float correctedPosX = (posX * viewportState.zoomScale + viewportState.transX) / windowState.width;
-    float correctedPosY = (posY * viewportState.zoomScale + viewportState.transY) / windowState.height;
+    float correctedPosX = ((posX + viewportState.transX) * viewportState.zoomScale) / windowState.width;
+    float correctedPosY = ((posY + viewportState.transY) * viewportState.zoomScale) / windowState.height;
     float correctedRadiusX = radius * viewportState.zoomScale / windowState.width;
     float correctedRadiusY = radius * viewportState.zoomScale / windowState.height;
 

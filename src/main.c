@@ -34,8 +34,8 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
     }
-    viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX);
-    viewportState.transY += 2 * (viewportState.prevPosY - cursorPosY);
+    viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX) / viewportState.zoomScale;
+    viewportState.transY += 2 * (viewportState.prevPosY - cursorPosY) / viewportState.zoomScale;
     
     viewportState.prevPosX = cursorPosX;
     viewportState.prevPosY = cursorPosY;

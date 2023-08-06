@@ -82,5 +82,5 @@ void calculatePhysics(Particle* particles) {
     }
 
     gettimeofday(&t1, 0);
-    printf("%f, %f \n", timedifference_msec(t0, t1), viewportState.zoomScale);
+    printf("%f\n", timedifference_msec(t0, t1));
 }
