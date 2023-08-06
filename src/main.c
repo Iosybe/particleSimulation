@@ -58,20 +58,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 
     if (key == GLFW_KEY_MINUS && action == GLFW_PRESS) {
-        // int windowWidth, windowHeight;
-        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
-        // cursorZoomPosX -= windowWidth * zoomScale / 2;
-        // cursorZoomPosY -= windowHeight * zoomScale / 2;
         viewportState.zoomScale *= 0.9;
     }
 
     if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
-        // int windowWidth, windowHeight;
-        // glfwGetWindowSize(window, &windowWidth, &windowHeight);
-        // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
-        // cursorZoomPosX -= windowWidth * zoomScale / 2;
-        // cursorZoomPosY -= windowHeight * zoomScale / 2;
         viewportState.zoomScale *= 1.1;
     }
 }
