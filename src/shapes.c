@@ -1,6 +1,6 @@
 #undef __STRICT_ANSI__
 #include "shapes.h"
-#include "globalStructs.h"
+#include "helperFiles/globalStructs.h"
 #include <math.h>
 
 void window_size_callback(GLFWwindow* window, int _width, int _height) {

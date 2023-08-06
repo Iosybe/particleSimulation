@@ -1,6 +1,6 @@
 #include "physics.h"
-#include "globalStructs.h"
-#include "globalFunctions.h"
+#include "helperFiles/globalStructs.h"
+#include "helperFiles/globalFunctions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

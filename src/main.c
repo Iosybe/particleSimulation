@@ -7,12 +7,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "loadShader.hpp"
-#include "glfwCallbacks.h"
+#include "shaders/loadShader.hpp"
+#include "glfw/glfwCallbacks.h"
 #include "shapes.h"
 #include "physics.h"
-#include "globalStructs.h"
-#include "globalFunctions.h"
+#include "helperFiles/globalStructs.h"
+#include "helperFiles/globalFunctions.h"
 
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
