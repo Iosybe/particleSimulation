@@ -10,8 +10,6 @@ typedef struct viewportStateStruct {
     double prevPosX;
     double prevPosY;
 
-    int fullscreenState;
-
     double cursorZoomPosX;
     double cursorZoomPosY;
 } ViewportStateStruct;
@@ -19,9 +17,12 @@ typedef struct viewportStateStruct {
 typedef struct windowStateStruct {
     int width;
     int height;
+
+    int fullscreenState;
 } WindowStateStruct;
 
 extern ViewportStateStruct viewportState;
+extern WindowStateStruct windowState;
 
 #endif
 

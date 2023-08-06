@@ -3,13 +3,9 @@
 #include "globalStructs.h"
 #include <math.h>
 
-
-int width = 500;
-int height = 500;
-
 void window_size_callback(GLFWwindow* window, int _width, int _height) {
-    width = _width;
-    height = _height;
+    windowState.width = _width;
+    windowState.height = _height;
 
     UNUSED(window);
 }
@@ -40,22 +36,23 @@ void buildUnitCircle(GLfloat* circle, int segments) {
 void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, float radius) {
     GLfloat circle[segments * 9];
 
-    float correctedPosX = posX * viewportState.zoomScale + viewportState.transX;
-    float correctedPosY = posY * viewportState.zoomScale + viewportState.transY;
-    float correctedRadius = radius * viewportState.zoomScale;
+    float correctedPosX = (posX * viewportState.zoomScale + viewportState.transX) / windowState.width;
+    float correctedPosY = (posY * viewportState.zoomScale + viewportState.transY) / windowState.height;
+    float correctedRadiusX = radius * viewportState.zoomScale / windowState.width;
+    float correctedRadiusY = radius * viewportState.zoomScale / windowState.height;
 
     for (int i = 0; i < segments * 9; i += 9) {
 
-        circle[i + 0] = (correctedRadius * templateCircle[i + 0] + correctedPosX) / width;
-        circle[i + 1] = (correctedRadius * templateCircle[i + 1] + correctedPosY) / height;
+        circle[i + 0] = correctedRadiusX * templateCircle[i + 0] + correctedPosX;
+        circle[i + 1] = correctedRadiusY * templateCircle[i + 1] + correctedPosY;
         circle[i + 2] = 0.0f;
 
-        circle[i + 3] = (correctedRadius * templateCircle[i + 3] + correctedPosX) / width;
-        circle[i + 4] = (correctedRadius * templateCircle[i + 4] + correctedPosY) / height;
+        circle[i + 3] = correctedRadiusX * templateCircle[i + 3] + correctedPosX;
+        circle[i + 4] = correctedRadiusY * templateCircle[i + 4] + correctedPosY;
         circle[i + 5] = 0.0f;
 
-        circle[i + 6] = (correctedRadius * templateCircle[i + 6] + correctedPosX) / width;
-        circle[i + 7] = (correctedRadius * templateCircle[i + 7] + correctedPosY) / height;
+        circle[i + 6] = correctedRadiusX * templateCircle[i + 6] + correctedPosX;
+        circle[i + 7] = correctedRadiusY * templateCircle[i + 7] + correctedPosY;
         circle[i + 8] = 0.0f;
     }
 

@@ -47,13 +47,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
         const GLFWvidmode* primaryMonitorMode = glfwGetVideoMode(primaryMonitor);
         
-        if (viewportState.fullscreenState) {
+        if (windowState.fullscreenState) {
             glfwSetWindowMonitor(window, NULL, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
-            viewportState.fullscreenState = !viewportState.fullscreenState;
+            windowState.fullscreenState = !windowState.fullscreenState;
         }
         else {
             glfwSetWindowMonitor(window, primaryMonitor, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
-            viewportState.fullscreenState = !viewportState.fullscreenState;
+            windowState.fullscreenState = !windowState.fullscreenState;
         }
     }
 
@@ -63,7 +63,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
         // cursorZoomPosX -= windowWidth * zoomScale / 2;
         // cursorZoomPosY -= windowHeight * zoomScale / 2;
-        viewportState.zoomScale += 0.1;
+        viewportState.zoomScale *= 0.9;
     }
 
     if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
@@ -72,7 +72,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         // glfwGetCursorPos(window, &cursorZoomPosX, &cursorZoomPosY);
         // cursorZoomPosX -= windowWidth * zoomScale / 2;
         // cursorZoomPosY -= windowHeight * zoomScale / 2;
-        viewportState.zoomScale -= 0.1;
+        viewportState.zoomScale *= 1.1;
     }
 }
 
@@ -110,13 +110,14 @@ int main() {
     // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
+    window = glfwCreateWindow( windowState.width, windowState.height, "ParticleSim", NULL, NULL);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeLimits(window, 10, 10, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -132,7 +133,7 @@ int main() {
         return -1;
     }
 
-    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+    // glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);

@@ -69,11 +69,11 @@ void calculatePhysics(Particle* particles) {
             if (distance > 20) {
                 float distanceWeight = 1.0 / powThree(distance); 
 
-                particles[i].velX += -particles[j].mass * distanceWeight * diffX;
-                particles[i].velY += -particles[j].mass * distanceWeight * diffY;
+                particles[i].velX += -gravConst * particles[j].mass * diffX * distanceWeight;
+                particles[i].velY += -gravConst * particles[j].mass * diffY * distanceWeight;
 
-                particles[j].velX -= -particles[i].mass * distanceWeight * diffX;
-                particles[j].velY -= -particles[i].mass * distanceWeight * diffY;
+                particles[j].velX -= -gravConst * particles[i].mass * diffX * distanceWeight;
+                particles[j].velY -= -gravConst * particles[i].mass * diffY * distanceWeight;
             }
         }
 
