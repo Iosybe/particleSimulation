@@ -8,6 +8,7 @@ ViewportStateStruct viewportState = (ViewportStateStruct) {
     0.0,    // prevPosY
     0,      // cursorZoomPosX
     0,      // cursorZoomPosY
+    -1,     // trackedParticle
 };
 
 WindowStateStruct windowState = (WindowStateStruct) {

@@ -12,6 +12,8 @@ typedef struct viewportStateStruct {
 
     double cursorZoomPosX;
     double cursorZoomPosY;
+
+    int trackedParticle;
 } ViewportStateStruct;
 
 typedef struct windowStateStruct {

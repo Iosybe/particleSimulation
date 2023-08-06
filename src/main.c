@@ -12,9 +12,11 @@
 #include "shapes.h"
 #include "physics.h"
 #include "globalStructs.h"
+#include "globalFunctions.h"
 
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
+Particle particles[NOP];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -33,6 +35,8 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
     }
+    viewportState.trackedParticle = -1;
+
     viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX) / viewportState.zoomScale;
     viewportState.transY += 2 * (viewportState.prevPosY - cursorPosY) / viewportState.zoomScale;
     
@@ -56,11 +60,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         }
     }
 
-    if (key == GLFW_KEY_MINUS && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        viewportState.trackedParticle = (int) randFloat((float) NOP);
+    }
+
+    if (key == GLFW_KEY_MINUS && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
         viewportState.zoomScale *= 0.9;
     }
 
-    if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_EQUAL && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
         viewportState.zoomScale *= 1.1;
     }
 
@@ -136,7 +144,6 @@ int main() {
 
     srand(time(NULL));
 
-    Particle particles[NOP];
     initializeParticles(particles);
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
@@ -151,14 +158,12 @@ int main() {
 
         glUseProgram(programID);
 
-        // for (int i = 0; i < 100; i++) {
-        //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
-        // }
-
         calculatePhysics(particles);
-
-        double cursorPosX, cursorPosY;
-        glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
+        
+        if (viewportState.trackedParticle != -1) {
+            viewportState.transX = -particles[viewportState.trackedParticle].posX;
+            viewportState.transY = -particles[viewportState.trackedParticle].posY;
+        }
 
         for (int i = 0; i < NOP; i++) {
             drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);

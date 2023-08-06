@@ -1,19 +1,11 @@
 #include "physics.h"
 #include "globalStructs.h"
+#include "globalFunctions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
-
-// Generates random float that is between 1 and max + 1
-float randFloat(float max) {
-    return 1 + (float) rand() * max / (float) RAND_MAX;
-}
-
-float randFloatRange(float min, float max) {
-    return min + (float) rand() * (max - min) / (float) RAND_MAX;
-}
 
 void initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
