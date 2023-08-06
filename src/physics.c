@@ -8,11 +8,11 @@
 
 // Generates random float that can't be zero
 float randFloat(float max) {
-    return (((float) rand()) + 1) / (float) RAND_MAX * max;
+    return (float) rand() * (max + 1) / (float) RAND_MAX;
 }
 
 float randFloatRange(float min, float max) {
-    return ((float) rand()) / (float) RAND_MAX * (max * 2) + min;
+    return min + (float) rand() * (max - min) / (float) RAND_MAX;
 }
 
 void initializeParticles(Particle* particles) {
