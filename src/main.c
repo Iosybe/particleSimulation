@@ -26,6 +26,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         glfwGetCursorPos(window, &viewportState.prevPosX, &viewportState.prevPosY);
     }
+    UNUSED(mods);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
@@ -62,6 +63,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS) {
         viewportState.zoomScale *= 1.1;
     }
+
+    UNUSED(mods);
+    UNUSED(scancode);
 }
 
 int main() {

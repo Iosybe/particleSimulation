@@ -26,8 +26,8 @@ void initializeParticles(Particle* particles) {
             x,
             y,    
 
-            -y / 100.0,
-            x / 100.0,
+            -y / (float) 100.0,
+            x / (float) 100.0,
         };
     }
 }
