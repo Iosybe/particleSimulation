@@ -6,9 +6,9 @@
 #include <math.h>
 #include <sys/time.h>
 
-// Generates random float that can't be zero
+// Generates random float that is between 1 and max + 1
 float randFloat(float max) {
-    return (float) rand() * (max + 1) / (float) RAND_MAX;
+    return 1 + (float) rand() * max / (float) RAND_MAX;
 }
 
 float randFloatRange(float min, float max) {
