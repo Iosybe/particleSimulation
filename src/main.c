@@ -172,7 +172,7 @@ int main() {
         // drawCircle(circle, SEGMENTS, cursorPosX, -cursorPosY, 5 );
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass * viewportState.zoomScale);
+            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
         }
 
         // while (prevTime + 100 > clock()) {

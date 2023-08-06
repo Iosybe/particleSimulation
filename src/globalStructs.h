@@ -23,8 +23,6 @@ typedef struct windowStateStruct {
 
 extern ViewportStateStruct viewportState;
 
-void initializeStateStructs();
-
 #endif
 
 
