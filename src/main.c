@@ -16,8 +16,6 @@
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
 
-
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 
@@ -155,12 +153,8 @@ int main() {
 
         calculatePhysics(particles);
 
-        // return 1; 
-
         double cursorPosX, cursorPosY;
         glfwGetCursorPos(window, &cursorPosX, &cursorPosY);
-
-        // drawCircle(circle, SEGMENTS, cursorPosX, -cursorPosY, 5 );
 
         for (int i = 0; i < NOP; i++) {
             drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
