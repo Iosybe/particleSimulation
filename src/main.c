@@ -7,12 +7,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "loadShader.hpp"
+#include "shaders/loadShader.hpp"
+#include "glfw/glfwCallbacks.h"
 #include "shapes.h"
 #include "physics.h"
+#include "helperFiles/globalStructs.h"
+#include "helperFiles/globalFunctions.h"
 
 #define SEGMENTS 128
 GLfloat circle[SEGMENTS * 9];
+Particle particles[NOP];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
@@ -20,28 +24,56 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     UNUSED(window);
 }
 
-float transX = 0;
-float transY = 0;
-
-double prevPosX, prevPosY;
-
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        glfwGetCursorPos(window, &prevPosX, &prevPosY);
+        glfwGetCursorPos(window, &viewportState.prevPosX, &viewportState.prevPosY);
     }
+    UNUSED(mods);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
-        prevPosX = 0;
-        prevPosY = 0;
         return;
     }
-    transX += 2 * (cursorPosX - prevPosX);
-    transY += 2 * (prevPosY - cursorPosY);
+    viewportState.trackedParticle = -1;
+
+    viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX) / viewportState.zoomScale;
+    viewportState.transY += 2 * (viewportState.prevPosY - cursorPosY) / viewportState.zoomScale;
     
-    prevPosX = cursorPosX;
-    prevPosY = cursorPosY;
+    viewportState.prevPosX = cursorPosX;
+    viewportState.prevPosY = cursorPosY;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+    if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+        GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* primaryMonitorMode = glfwGetVideoMode(primaryMonitor);
+        
+        if (windowState.fullscreenState) {
+            glfwSetWindowMonitor(window, NULL, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
+            windowState.fullscreenState = !windowState.fullscreenState;
+        }
+        else {
+            glfwSetWindowMonitor(window, primaryMonitor, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
+            windowState.fullscreenState = !windowState.fullscreenState;
+        }
+    }
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        viewportState.trackedParticle = (int) randFloat((float) NOP);
+    }
+
+    if (key == GLFW_KEY_MINUS && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+        viewportState.zoomScale *= 0.9;
+    }
+
+    if (key == GLFW_KEY_EQUAL && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+        viewportState.zoomScale *= 1.1;
+    }
+
+    UNUSED(mods);
+    UNUSED(scancode);
 }
 
 int main() {
@@ -78,12 +110,14 @@ int main() {
     // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
     GLFWwindow* window;
-    window = glfwCreateWindow( 500, 500, "ParticleSim", NULL, NULL);
+    window = glfwCreateWindow( windowState.width, windowState.height, "ParticleSim", NULL, NULL);
+
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetWindowSizeCallback(window, window_size_callback);
-    // miss programmatically uitzetten zodat ie niet polled als knop niet ingedrukt?
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowSizeLimits(window, 10, 10, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -99,18 +133,17 @@ int main() {
         return -1;
     }
 
-    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+    // glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     
-    buildCircle(circle, 4.0, SEGMENTS);
+    buildUnitCircle(circle, SEGMENTS);
 
     srand(time(NULL));
 
-    Particle particles[NOP];
     initializeParticles(particles);
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
@@ -118,21 +151,22 @@ int main() {
     // time_t prevTime = time(NULL);
     // int fps = 0;
 
+    
+
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(programID);
 
-        // for (int i = 0; i < 100; i++) {
-        //     drawCircle(circle, 128, (float) (rand() % 1000) - 500, (float) (rand() % 1000) - 500);
-        // }
-
         calculatePhysics(particles);
-
-        // return 1; 
+        
+        if (viewportState.trackedParticle != -1) {
+            viewportState.transX = -particles[viewportState.trackedParticle].posX;
+            viewportState.transY = -particles[viewportState.trackedParticle].posY;
+        }
 
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX + transX, particles[i].posY + transY);
+            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
         }
 
         // while (prevTime + 100 > clock()) {

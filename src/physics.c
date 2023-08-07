@@ -1,30 +1,25 @@
 #include "physics.h"
+#include "helperFiles/globalStructs.h"
+#include "helperFiles/globalFunctions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
 
-// Generates random float that can't be zero
-float randFloat(float max) {
-    return (((float) rand()) + 1) / (float) RAND_MAX * max;
-}
-
-float randFloatRange(float min, float max) {
-    return ((float) rand()) / (float) RAND_MAX * (max * 2) + min;
-}
-
 void initializeParticles(Particle* particles) {
     for (int i = 0; i < NOP; i++) {
-        particles[i] = {
+        float x = randFloatRange(-200.0, 200.0);
+        float y = randFloatRange(-200.0, 200.0);
+        particles[i] = (Particle) {
             i,
             randFloat(5.0),
 
-            randFloatRange(-500.0, 500.0),
-            randFloatRange(-500.0, 500.0),
+            x,
+            y,    
 
-            0.0,
-            0.0,
+            -y / (float) 100.0,
+            x / (float) 100.0,
         };
     }
 }
@@ -63,14 +58,14 @@ void calculatePhysics(Particle* particles) {
 
             float distance = calcDistance(diffX, diffY);
 
-            if (distance > 50) {
-                float gravFactor = -particles[j].mass / powThree(distance);
+            if (distance > 20) {
+                float distanceWeight = 1.0 / powThree(distance); 
 
-                particles[i].velX += gravFactor * diffX;
-                particles[i].velY += gravFactor * diffY;
+                particles[i].velX += -gravConst * particles[j].mass * diffX * distanceWeight;
+                particles[i].velY += -gravConst * particles[j].mass * diffY * distanceWeight;
 
-                particles[j].velX -= gravFactor * diffX;
-                particles[j].velY -= gravFactor * diffY;
+                particles[j].velX -= -gravConst * particles[i].mass * diffX * distanceWeight;
+                particles[j].velY -= -gravConst * particles[i].mass * diffY * distanceWeight;
             }
         }
 
