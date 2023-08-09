@@ -76,7 +76,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         simulationState.pauze = !simulationState.pauze;
     }
 
-    if (key == GLFW_KEY_PERIOD && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+    if (key == GLFW_KEY_PERIOD && simulationState.pauze == 1 && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
         updatePhysics(particles);
     }
 
