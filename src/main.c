@@ -181,7 +181,7 @@ int main(void) {
     glDeleteProgram(programID);
     glfwDestroyWindow(window);
 
-    destroyParicles(particles);
+    destroyParticles(particles);
 
     return 0;
 }
