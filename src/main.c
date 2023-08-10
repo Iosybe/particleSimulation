@@ -76,7 +76,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     UNUSED(scancode);
 }
 
-int main() {
+int main(void) {
     // const rlim_t kStackSize = 256 * 1024 * 1024;
     // struct rlimit rl;
     // int result;
@@ -144,7 +144,11 @@ int main() {
 
     srand(time(NULL));
 
-    initializeParticles(particles);
+    Particle particles[NOP];
+
+    if (initializeParticles(particles)) {
+        return 1;
+    }
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
 
@@ -155,7 +159,6 @@ int main() {
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         glUseProgram(programID);
 
         calculatePhysics(particles);
@@ -169,29 +172,16 @@ int main() {
             drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
         }
 
-        // while (prevTime + 100 > clock()) {
-        //     glfwPollEvents();
-        // }
- 
-        // if (prevTime < time(NULL)) {
-        //     printf("%i\n", fps);
-
-        //     fps = 0;
-        //     prevTime++;
-        // }
-        // else {
-        //     fps++;
-        // }
-
-        glfwPollEvents();
         glfwSwapBuffers(window);
-
+        glfwPollEvents();
     }
     while( glfwWindowShouldClose(window) == 0);
 
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
     glfwDestroyWindow(window);
+
+    destroyParicles(particles);
 
     return 0;
 }
