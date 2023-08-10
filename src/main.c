@@ -31,6 +31,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     UNUSED(mods);
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (yoffset > 0.01);
+        viewportState.zoomScale *= (float)yoffset;
+        printf("%f\n", yoffset);
+    
+    
+    UNUSED(window);
+    UNUSED(xoffset);
+}
+
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
@@ -117,6 +127,7 @@ int main(void) {
     glfwSetCursorPosCallback(window, cursor_position_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetScrollCallback(window, scroll_callback);
     glfwSetWindowSizeLimits(window, 10, 10, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     if ( window == NULL ) {

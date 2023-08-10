@@ -30,7 +30,7 @@ typedef struct InteractionData {
 } InteractionData;
 
 int initializeParticles(Particle* particles);
-void destroyParicles(Particle* particles);
+void destroyParticles(Particle* particles);
 
 void calculatePhysics(Particle* particles);
 
