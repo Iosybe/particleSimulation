@@ -31,6 +31,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     UNUSED(mods);
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    if (yoffset > 0.01);
+        viewportState.zoomScale *= 1.0 + yoffset*0.1;
+        printf("%f\n", yoffset);
+    
+    
+    UNUSED(window);
+    UNUSED(xoffset);
+}
+
 static void cursor_position_callback(GLFWwindow* window, double cursorPosX, double cursorPosY) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
@@ -126,6 +136,7 @@ int main(void) {
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetKeyCallback(window, key_callback);
     glfwSetWindowSizeLimits(window, 10, 10, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetScrollCallback(window, scroll_callback);
 
     if ( window == NULL ) {
         fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
