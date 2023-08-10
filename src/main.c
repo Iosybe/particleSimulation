@@ -33,7 +33,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     if (yoffset > 0.01);
-        viewportState.zoomScale *= (float)yoffset;
+        viewportState.zoomScale *= 1.0 + yoffset*0.1;
         printf("%f\n", yoffset);
     
     
