@@ -1,9 +1,10 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#define NOP (int) 1000
-#define gravConst (int) 1
-#define BUFSIZE (int) (NOP / 2.0 * (NOP - 1))
+#include <pthread.h>
+
+#define NOP 1000 // Number of particle
+#define NOIPT 60000 // Number of interactions per thread
 
 typedef struct particle {
     int id;
@@ -14,9 +15,24 @@ typedef struct particle {
 
     float velX;
     float velY;
+
+    pthread_mutex_t mutex;
 } Particle;
 
-void initializeParticles(Particle* particles);
+typedef struct combCouple {
+    Particle* particleOne;
+    Particle* particleTwo;
+} CombCouple;
+
+typedef struct InteractionData {
+    CombCouple* startPointer;
+    CombCouple* endPointer;
+} InteractionData;
+
+int initializeParticles(Particle* particles);
+void destroyParticles(Particle* particles);
 void updatePhysics(Particle* particles);
+
+void calculatePhysics(Particle* particles);
 
 #endif
