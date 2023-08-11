@@ -149,5 +149,5 @@ void calculatePhysics(Particle* particles) {
     }
 
     gettimeofday(&t1, 0);
-    // printf("%f\n", timedifference_msec(t0, t1));
+    printf("%f\n", timedifference_msec(t0, t1));
 }

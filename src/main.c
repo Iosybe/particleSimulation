@@ -87,24 +87,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 int main(void) {
-    // const rlim_t kStackSize = 256 * 1024 * 1024;
-    // struct rlimit rl;
-    // int result;
-
-    // result = getrlimit(RLIMIT_STACK, &rl);
-    // if (result == 0)
-    // {
-    //     if (rl.rlim_cur < kStackSize)
-    //     {
-    //         rl.rlim_cur = kStackSize;
-    //         result = setrlimit(RLIMIT_STACK, &rl);
-    //         if (result != 0)
-    //         {
-    //             fprintf(stderr, "setrlimit returned result = %d\n", result);
-    //         }
-    //     }
-    // }
-
     if (!glfwInit()) {
         fprintf( stderr, "Failed to initialize GLFW\n" );
         return -1;
@@ -116,8 +98,6 @@ int main(void) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
     // glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-
-    // glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
     GLFWwindow* window;
     window = glfwCreateWindow( windowState.width, windowState.height, "ParticleSim", NULL, NULL);
@@ -162,11 +142,6 @@ int main(void) {
     }
 
     GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
-
-    // time_t prevTime = time(NULL);
-    // int fps = 0;
-
-    
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
