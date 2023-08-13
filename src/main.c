@@ -160,8 +160,6 @@ int main(void) {
 
     srand(time(NULL));
 
-    Particle particles[NOP];
-
     if (initializeParticles(particles)) {
         return 1;
     }
