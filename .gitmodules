@@ -1,0 +1,8 @@
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+	ignore = dirty
+[submodule "external/tinycthread"]
+	path = external/tinycthread
+	url = https://github.com/tinycthread/tinycthread.git
+	ignore = dirty

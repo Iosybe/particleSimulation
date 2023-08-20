@@ -2,12 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include <sys/resource.h>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shaders/loadShader.hpp"
+#include "shaders/loadShader.h"
 #include "glfw/glfwCallbacks.h"
 #include "shapes.h"
 #include "physics.h"
@@ -15,7 +14,6 @@
 #include "helperFiles/globalFunctions.h"
 
 #define SEGMENTS 128
-GLfloat circle[SEGMENTS * 9];
 Particle particles[NOP];
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -28,14 +26,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         glfwGetCursorPos(window, &viewportState.prevPosX, &viewportState.prevPosY);
     }
+
     UNUSED(mods);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    if (yoffset > 0.01);
-        viewportState.zoomScale *= 1.0 + yoffset*0.1;
-        printf("%f\n", yoffset);
-    
+    viewportState.zoomScale *= 1.0 + yoffset*0.1;
     
     UNUSED(window);
     UNUSED(xoffset);
@@ -45,6 +41,7 @@ static void cursor_position_callback(GLFWwindow* window, double cursorPosX, doub
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
         return;
     }
+
     viewportState.trackedParticle = -1;
 
     viewportState.transX += 2 * (cursorPosX - viewportState.prevPosX) / viewportState.zoomScale;
@@ -61,10 +58,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         const GLFWvidmode* primaryMonitorMode = glfwGetVideoMode(primaryMonitor);
         
         if (windowState.fullscreenState) {
-            glfwSetWindowMonitor(window, NULL, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
+            glfwSetWindowMonitor(window, NULL, windowState.windowedPosX, windowState.windowedPosY, windowState.windowedWidth, windowState.windowedHeight, 0);
             windowState.fullscreenState = !windowState.fullscreenState;
         }
         else {
+            windowState.windowedWidth = windowState.width;
+            windowState.windowedHeight = windowState.height;
+
+            int posX, posY;
+            glfwGetWindowPos(window, &posX, &posY);
+
+            windowState.windowedPosX = posX;
+            windowState.windowedPosY = posY;
+
             glfwSetWindowMonitor(window, primaryMonitor, 0, 0, primaryMonitorMode->width, primaryMonitorMode->height, primaryMonitorMode->refreshRate);
             windowState.fullscreenState = !windowState.fullscreenState;
         }
@@ -117,21 +123,27 @@ int main(void) {
     }
 
     glfwMakeContextCurrent(window); // Initialize GLEW
-    glewExperimental = 1; // Needed in core profile
+    // glewExperimental = 1; // Needed in core profile
 
-    if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return -1;
-    }
+    // if (glewInit() != GLEW_OK) {
+    //     fprintf(stderr, "Failed to initialize GLEW\n");
+    //     return -1;
+    // }
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		fprintf(stderr, "Failed to initialize GLAD");
+		return -1;
+	}
 
-    // glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     GLuint VertexArrayID;
     glGenVertexArrays(1, &VertexArrayID);
     glBindVertexArray(VertexArrayID);
 
     
-    buildUnitCircle(circle, SEGMENTS);
+    // GLfloat circle[SEGMENTS * 9];
+    GLfloat* circle;
+    buildUnitCircle(&circle, SEGMENTS);
 
     srand(time(NULL));
 
@@ -141,13 +153,19 @@ int main(void) {
         return 1;
     }
 
-    GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vertexshader", "shaders/SimpleFragmentShader.fragmentshader" );
+    GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vert", "shaders/SimpleFragmentShader.frag" );
+
+    double prevTime = glfwGetTime();
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
 
+        // double startTime = glfwGetTime();
         calculatePhysics(particles);
+        // double endTime = glfwGetTime();
+
+        // printf("%f\n", (endTime - startTime) * 1000);
         
         if (viewportState.trackedParticle != -1) {
             viewportState.transX = -particles[viewportState.trackedParticle].posX;
@@ -160,6 +178,10 @@ int main(void) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+        double curTime = glfwGetTime();
+        printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
+        prevTime = curTime;
     }
     while( glfwWindowShouldClose(window) == 0);
 

@@ -1,7 +1,7 @@
-#undef __STRICT_ANSI__
 #include "shapes.h"
 #include "helperFiles/globalStructs.h"
-#include <math.h>
+
+#include <stdlib.h>
 
 void window_size_callback(GLFWwindow* window, int _width, int _height) {
     windowState.width = _width;
@@ -10,7 +10,10 @@ void window_size_callback(GLFWwindow* window, int _width, int _height) {
     UNUSED(window);
 }
 
-void buildUnitCircle(GLfloat* circle, int segments) {
+void buildUnitCircle(GLfloat** circlePointer, int segments) {
+    *circlePointer = (GLfloat*) malloc(sizeof(GLfloat) * (segments * 18));
+    GLfloat* circle = *circlePointer;
+
     float angleInterval = M_PI * 2 / segments;
 
     for (int i = 0; i < segments; i++) {
@@ -34,7 +37,7 @@ void buildUnitCircle(GLfloat* circle, int segments) {
 }
 
 void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, float radius) {
-    GLfloat circle[segments * 9];
+    GLfloat* circle = templateCircle + segments * 9;
 
     float correctedPosX = ((posX + viewportState.transX) * viewportState.zoomScale) / windowState.width;
     float correctedPosY = ((posY + viewportState.transY) * viewportState.zoomScale) / windowState.height;
@@ -59,7 +62,8 @@ void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, f
     GLuint vertexbuffer;
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(circle), circle, GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(circle), circle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * segments * 9, circle, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(

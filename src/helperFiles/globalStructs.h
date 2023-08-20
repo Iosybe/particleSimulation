@@ -20,6 +20,12 @@ typedef struct windowStateStruct {
     int width;
     int height;
 
+    int windowedWidth;
+    int windowedHeight;
+
+    int windowedPosX;
+    int windowedPosY;
+
     int fullscreenState;
 } WindowStateStruct;
 
