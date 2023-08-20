@@ -69,11 +69,7 @@ CMakeDoxygenDefaults.cmake
 *.vcxproj
 *.vcxproj.filters
 *sln
-ParticleSimulation.dir/
+*.dir/
 x64/
 .vscode/
 .ccls-cache/
-
-# Libraries
-
-glad/
