@@ -51,6 +51,29 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-*.out
+# CMake GitIgnore
+
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+CMakeDoxyfile.in
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+CMakeDoxygenDefaults.cmake
+*.vcxproj
+*.vcxproj.filters
+*sln
+ParticleSimulation.dir/
+x64/
 .vscode/
 .ccls-cache/
+
+# Libraries
+
+glad/

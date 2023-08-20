@@ -1,22 +1,29 @@
 #include "globalStructs.h"
 
-ViewportStateStruct viewportState = (ViewportStateStruct) {
-    0.0,    // transX
-    0.0,    // transY
-    1.0,    // zoomScale
-    0.0,    // prevPosX
-    0.0,    // prevPosY
-    0,      // cursorZoomPosX
-    0,      // cursorZoomPosY
-    -1,     // trackedParticle
+ViewportStateStruct viewportState = {
+    .transX = 0.0,
+    .transY = 0.0,
+
+    .zoomScale = 1.0,
+
+    .prevPosX = 0.0,
+    .prevPosY = 0.0,
+
+    .cursorZoomPosX = 0,
+    .cursorZoomPosY = 0,
+
+    .trackedParticle = -1,
 };
 
-WindowStateStruct windowState = (WindowStateStruct) {
-    500, // width
-    500, // height
-    0, // fullscreenState
-};
+WindowStateStruct windowState = {
+    .width = 500,
+    .height = 500,
+    
+    .windowedWidth = 500, 
+    .windowedHeight = 500,
 
-SimulationStateStruct simulationState = (SimulationStateStruct) {
-    0,
+    .windowedPosX = 0,
+    .windowedPosY = 0,
+
+    .fullscreenState = 0,
 };
