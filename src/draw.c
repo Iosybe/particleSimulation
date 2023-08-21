@@ -1,4 +1,5 @@
-#include "shapes.h"
+#undef __STRICT_ANSI__
+#include "draw.h"
 #include "helperFiles/globalStructs.h"
 
 #include <stdlib.h>
@@ -39,8 +40,8 @@ void buildUnitCircle(GLfloat** circlePointer, int segments) {
 void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, float radius) {
     GLfloat* circle = templateCircle + segments * 9;
 
-    float correctedPosX = ((posX + viewportState.transX) * viewportState.zoomScale) / windowState.width;
-    float correctedPosY = ((posY + viewportState.transY) * viewportState.zoomScale) / windowState.height;
+    float correctedPosX = (posX + viewportState.transX) * viewportState.zoomScale / windowState.width;
+    float correctedPosY = (posY + viewportState.transY) * viewportState.zoomScale / windowState.height;
     float correctedRadiusX = radius * viewportState.zoomScale / windowState.width;
     float correctedRadiusY = radius * viewportState.zoomScale / windowState.height;
 

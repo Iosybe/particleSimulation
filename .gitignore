@@ -35,6 +35,7 @@
 *.i*86
 *.x86_64
 *.hex
+ParticleSimulation
 
 # Debug files
 *.dSYM/
@@ -69,7 +70,12 @@ CMakeDoxygenDefaults.cmake
 *.vcxproj
 *.vcxproj.filters
 *sln
-*.dir/
+ParticleSimulation.dir/
 x64/
 .vscode/
 .ccls-cache/
+
+# Libraries
+
+glad/
+
