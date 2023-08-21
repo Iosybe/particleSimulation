@@ -80,6 +80,7 @@ int main(void) {
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(programID);
+        glfwPollEvents();
 
         if (simulationState.pauze == 0) {
             updatePhysics();
@@ -95,7 +96,6 @@ int main(void) {
         }
 
         glfwSwapBuffers(window);
-        glfwPollEvents();
 
         double curTime = glfwGetTime();
         printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
