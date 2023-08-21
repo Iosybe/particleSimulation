@@ -27,3 +27,7 @@ WindowStateStruct windowState = {
 
     .fullscreenState = 0,
 };
+
+SimulationStateStruct simulationState = {
+    0,
+};

@@ -3,10 +3,7 @@
 
 #include <tinycthread.h>
 
-#define NOP 1000 // Number of particle
 #define NOIPT 60000 // Number of interactions per thread
-#define NOI (int) (NOP / 2.0 * (NOP - 1)) // Number of interactions
-#define NOT NOI / NOIPT + (NOI % NOIPT > 0) // Number of threads
 
 typedef struct particle {
     int id;
@@ -32,9 +29,10 @@ typedef struct InteractionData {
     CombCouple* endPointer;
 } InteractionData;
 
-int initializeParticles(Particle* particles);
-void destroyParticles(Particle* particles);
+Particle* getParticles();
 
-void calculatePhysics(Particle* particles);
+int initializeParticles(int _nop);
+void destroyParticles();
+void updatePhysics();
 
 #endif

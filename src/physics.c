@@ -5,15 +5,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-// #include <sys/time.h>
 
+Particle* particles;
 CombCouple* combArray;
-InteractionData interactionDatas[NOT];
+InteractionData* interactionDatas;
+thrd_t* threadIds;
 
-int initializeParticles(Particle* particles) {
-    for (int i = 0; i < NOP; i++) {
+int nop; // Number of particles
+int noi; // Number of interactions
+int not; // Number of threads
+
+Particle* getParticles() {
+    return particles;
+}
+
+int initializeParticles(int _nop) {
+    // Setting const variables (not really contant)
+    nop = _nop;
+    noi = (int) (nop / 2.0 * (nop - 1));
+    not = noi / NOIPT + (noi % NOIPT > 0);
+
+    // Creating space for thread ids
+    threadIds = (thrd_t*) malloc(sizeof(thrd_t) * not);
+
+    // Creating Particles
+    particles = (Particle*) malloc(sizeof(Particle) * nop);
+
+    for (int i = 0; i < nop; i++) {
         float x = randFloatRange(-200.0, 200.0);
         float y = randFloatRange(-200.0, 200.0);
+
         particles[i] = (Particle) {
             i,
             randFloat(5.0),
@@ -28,7 +49,8 @@ int initializeParticles(Particle* particles) {
         mtx_init(&particles[i].mutex, mtx_plain);
     }
 
-    combArray = (CombCouple*) malloc(sizeof(CombCouple) * NOI);
+    // Creating combination array
+    combArray = (CombCouple*) malloc(sizeof(CombCouple) * noi);
 
     if (combArray == NULL) {
         return 1;
@@ -36,8 +58,8 @@ int initializeParticles(Particle* particles) {
 
     int combIndex = 0;
 
-    for (int i = 0; i < NOP; i++) {
-        for (int j = i + 1; j < NOP; j++) {
+    for (int i = 0; i < nop; i++) {
+        for (int j = i + 1; j < nop; j++) {
             combArray[combIndex] = (CombCouple) {
                 particles + i,
                 particles + j,
@@ -47,8 +69,12 @@ int initializeParticles(Particle* particles) {
         }
     }
 
-    const int wholeThreads = NOI / NOIPT;
-    const int partialThread = NOI % NOIPT > 0;
+
+    // Creating interaction datas
+    interactionDatas = (InteractionData*) malloc(sizeof(InteractionData) * not);
+    
+    const int wholeThreads = noi / NOIPT;
+    const int partialThread = noi % NOIPT > 0;
 
     for (int i = 0; i < wholeThreads; i++) {
         interactionDatas[i] = (InteractionData) {
@@ -60,19 +86,22 @@ int initializeParticles(Particle* particles) {
     if (partialThread) {
         interactionDatas[wholeThreads] = (InteractionData) {
             combArray + wholeThreads * NOIPT,
-            combArray + NOI - 1,
+            combArray + noi - 1,
         };
     }
 
     return 0;
 }
 
-void destroyParticles(Particle* particles) {
-    for (int i = 0; i < NOP; i++) {
+void destroyParticles() {
+    for (int i = 0; i < nop; i++) {
         mtx_destroy(&particles[i].mutex);
     }
 
     free(combArray);
+    free(particles);
+    free(interactionDatas);
+    free(threadIds);
 }
 
 // Optimization because pow() is slow
@@ -87,10 +116,6 @@ float powThree(float n) {
 float calcDistance(float diffX, float diffY) {
     return sqrt(powTwo(diffX) + powTwo(diffY));
 }
-
-// float timedifference_msec(struct timeval t0, struct timeval t1) {
-//     return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
-// }
 
 void* particleInteractions(void* args) {
     InteractionData* interactionData = (InteractionData*) args;
@@ -125,26 +150,17 @@ void* particleInteractions(void* args) {
     return NULL;
 }
 
-void calculatePhysics(Particle* particles) {
-    // struct timeval t0;
-    // struct timeval t1;
-    // gettimeofday(&t0, 0);
-
-    thrd_t threadIds[NOT];
-
-    for (int i = 0; i < NOT; i++) {
+void updatePhysics() {
+    for (int i = 0; i < not; i++) {
         thrd_create(&threadIds[i], particleInteractions, (void*) (interactionDatas + i));
     }
 
-    for (int i = 0; i < NOT; i++) {
+    for (int i = 0; i < not; i++) {
         thrd_join(threadIds[i], NULL);
     }
 
-    for (int i = 0; i < NOP; i++) {
+    for (int i = 0; i < nop; i++) {
         particles[i].posX += particles[i].velX;
         particles[i].posY += particles[i].velY;
     }
-
-    // gettimeofday(&t1, 0);
-    // printf("%f\n", timedifference_msec(t0, t1));
 }
