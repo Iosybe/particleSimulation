@@ -7,6 +7,13 @@ void initializeGlfwCallbacks(int _nop) {
     callbacksNop = _nop;
 }
 
+void window_size_callback(GLFWwindow* window, int width, int height) {
+    windowState.width = width;
+    windowState.height = height;
+
+    UNUSED(window);
+}
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 

@@ -73,7 +73,10 @@ int main(void) {
 
     Particle* particles = getParticles();
 
-    GLuint programID = LoadShaders( "shaders/SimpleVertexShader.vert", "shaders/SimpleFragmentShader.frag" );
+    GLuint programID = LoadShaders( "shaders/circle.vert", "shaders/circle.frag" );
+
+    GLuint circleBuffer;
+    createCircleBuffer(circle, SEGMENTS, &circleBuffer);
 
     double prevTime = glfwGetTime();
 
@@ -91,17 +94,24 @@ int main(void) {
             viewportState.transY = -particles[viewportState.trackedParticle].posY;
         }
 
+        // Drawing correction function
+        double startTime = glfwGetTime();
+        correctDrawing();
+
         for (int i = 0; i < NOP; i++) {
-            drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
+            drawCircleBufferless(programID, circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
         }
+        printf("%fms\n", ((glfwGetTime() - startTime) * 1000));
 
         glfwSwapBuffers(window);
 
         double curTime = glfwGetTime();
-        printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
+        // printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
         prevTime = curTime;
     }
     while( glfwWindowShouldClose(window) == 0);
+
+    glDeleteBuffers(1, &circleBuffer);
 
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);

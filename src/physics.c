@@ -117,7 +117,7 @@ float calcDistance(float diffX, float diffY) {
     return sqrt(powTwo(diffX) + powTwo(diffY));
 }
 
-void* particleInteractions(void* args) {
+int particleInteractions(void* args) {
     InteractionData* interactionData = (InteractionData*) args;
 
     for (CombCouple* particles = interactionData->startPointer; particles < interactionData->endPointer; particles++) {
@@ -147,7 +147,7 @@ void* particleInteractions(void* args) {
         }
     }
 
-    return NULL;
+    return 0;
 }
 
 void updatePhysics() {
