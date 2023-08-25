@@ -75,7 +75,5 @@ x64/
 .vscode/
 .ccls-cache/
 
-# Libraries
 
-glad/
-
+build/
