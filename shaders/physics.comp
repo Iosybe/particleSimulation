@@ -1,0 +1,84 @@
+#version 430 core
+
+layout (local_size_x = 8, local_size_y = 4, local_size_z = 1) in;
+
+struct Particle {
+    vec2 pos;
+    vec2 vel;
+    float mass;
+};
+
+layout(std430, binding = 1) buffer particlesBuffer {
+    Particle particles[];
+};
+
+layout(std430, binding = 2) buffer velocityBuffer {
+    int velBufferSize;
+    vec2 velBuffer[];
+};
+
+void main() {
+    if (gl_GlobalInvocationID.x == gl_GlobalInvocationID.y) {
+        return;
+    }
+
+    vec2 diff = particles[gl_GlobalInvocationID.x].pos - particles[gl_GlobalInvocationID.y].pos;
+    float distance = length(diff);
+
+    // float gravWeight = 1 / (distance * distance * distance);
+
+    uint xIndex = gl_GlobalInvocationID.x - uint(gl_GlobalInvocationID.x > gl_GlobalInvocationID.y);
+
+    if (distance > 20) {
+        float gravFactor = particles[gl_GlobalInvocationID.y].mass / (pow(distance, 3));
+
+        velBuffer[gl_GlobalInvocationID.y * (velBufferSize - 1) + xIndex] = gravFactor.xx * diff;
+    }
+    else {
+        velBuffer[gl_GlobalInvocationID.y * (velBufferSize - 1) + xIndex] = 0.0.xx;
+    }
+}
+
+// -----------------------------------
+
+// void main() {
+//     float diffX = particles[gl_GlobalInvocationID.x].pos.x - particles[gl_GlobalInvocationID.y].pos.x;
+//     float diffY = particles[gl_GlobalInvocationID.x].pos.y - particles[gl_GlobalInvocationID.y].pos.y;
+    
+//     float distance = sqrt(diffX * diffX + diffY * diffY);
+
+//     bool valid = distance > 20;
+
+//     float gravWeight = 1 / (distance * distance * distance);
+
+//     vec2 gravFactor;
+//     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight * valid;
+//     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight * valid;
+
+//     velBuffer[].x = gravFactor.x * diffX;
+//     velBuffer[].y = gravFactor.x * diffY;
+
+//     velBuffer[].x = gravFactor.y * diffX;
+//     velBuffer[].y = gravFactor.y * diffY;
+
+//     // if (distance > 20) {
+//     //     float gravWeight = 1 / (distance * distance * distance);
+
+//     //     vec2 gravFactor;
+//     //     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight;
+//     //     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight;
+
+//     //     velBuffer[].x = gravFactor.x * diffX;
+//     //     velBuffer[].y = gravFactor.x * diffY;
+
+//     //     velBuffer[].x = gravFactor.y * diffX;
+//     //     velBuffer[].y = gravFactor.y * diffY;
+//     // }
+//     // else {
+//     //     velBuffer[].x = 0.0;
+//     //     velBuffer[].y = 0.0;
+
+//     //     velBuffer[].x = 0.0;
+//     //     velBuffer[].y = 0.0;
+//     // }
+// }

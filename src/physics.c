@@ -1,166 +1,82 @@
 #include "physics.h"
+#include "shaders/loadShader.h"
 #include "helperFiles/globalStructs.h"
 #include "helperFiles/globalFunctions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-Particle* particles;
-CombCouple* combArray;
-InteractionData* interactionDatas;
-thrd_t* threadIds;
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 int nop; // Number of particles
-int noi; // Number of interactions
-int not; // Number of threads
+GLuint physicsProgramID;
+GLuint sumVelProgramID;
 
-Particle* getParticles() {
-    return particles;
-}
+GLuint particlesBuffer;
+GLuint velocityBuffer;
+
+// Particle* getParticles() {
+//     return particles;
+// }
 
 int initializeParticles(int _nop) {
-    // Setting const variables (not really contant)
     nop = _nop;
-    noi = (int) (nop / 2.0 * (nop - 1));
-    not = noi / NOIPT + (noi % NOIPT > 0);
-
-    // Creating space for thread ids
-    threadIds = (thrd_t*) malloc(sizeof(thrd_t) * not);
 
     // Creating Particles
-    particles = (Particle*) malloc(sizeof(Particle) * nop);
+    Particle* particles = (Particle*) malloc(sizeof(Particle) * nop);
+    if (particles == NULL) { return 1; }
 
     for (int i = 0; i < nop; i++) {
         float x = randFloatRange(-200.0, 200.0);
         float y = randFloatRange(-200.0, 200.0);
 
         particles[i] = (Particle) {
-            i,
-            randFloat(5.0),
-
-            x,
-            y,    
-
-            -y / 100.0,
-            x / 100.0,
-        };
-
-        mtx_init(&particles[i].mutex, mtx_plain);
-    }
-
-    // Creating combination array
-    combArray = (CombCouple*) malloc(sizeof(CombCouple) * noi);
-
-    if (combArray == NULL) {
-        return 1;
-    }
-
-    int combIndex = 0;
-
-    for (int i = 0; i < nop; i++) {
-        for (int j = i + 1; j < nop; j++) {
-            combArray[combIndex] = (CombCouple) {
-                particles + i,
-                particles + j,
-            };
-
-            combIndex++;
-        }
-    }
-
-
-    // Creating interaction datas
-    interactionDatas = (InteractionData*) malloc(sizeof(InteractionData) * not);
-    
-    const int wholeThreads = noi / NOIPT;
-    const int partialThread = noi % NOIPT > 0;
-
-    for (int i = 0; i < wholeThreads; i++) {
-        interactionDatas[i] = (InteractionData) {
-            combArray + i * NOIPT,
-            combArray + (i + 1) * NOIPT,
+            .pos = {x, y},
+            .vel = {-y / 100.0, x / 100.0},
+            .mass = randFloat(5.0),
         };
     }
 
-    if (partialThread) {
-        interactionDatas[wholeThreads] = (InteractionData) {
-            combArray + wholeThreads * NOIPT,
-            combArray + noi - 1,
-        };
-    }
+    glGenBuffers(1, &particlesBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, particlesBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * nop, particles, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particlesBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    free(particles);
+
+    // printf("%i\n", 2 * sizeof(float) * (nop * nop - nop) + sizeof(int));
+
+    // Creating velocity buffer
+    glGenBuffers(1, &velocityBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, velocityBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * sizeof(float) * (nop * nop - nop) + sizeof(int), NULL, GL_DYNAMIC_DRAW); // Should be changed to fixed size
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, velocityBuffer);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(int), &nop);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+    physicsProgramID = LoadComputeShaders("shaders/physics.comp");
+    sumVelProgramID = LoadComputeShaders("shaders/sumVel.comp");
 
     return 0;
 }
 
 void destroyParticles() {
-    for (int i = 0; i < nop; i++) {
-        mtx_destroy(&particles[i].mutex);
-    }
+    glDeleteProgram(physicsProgramID);
 
-    free(combArray);
-    free(particles);
-    free(interactionDatas);
-    free(threadIds);
-}
-
-// Optimization because pow() is slow
-float powTwo(float n) {
-    return n * n;
-}
-
-float powThree(float n) {
-    return n * n * n;
-}
-
-float calcDistance(float diffX, float diffY) {
-    return sqrt(powTwo(diffX) + powTwo(diffY));
-}
-
-int particleInteractions(void* args) {
-    InteractionData* interactionData = (InteractionData*) args;
-
-    for (CombCouple* particles = interactionData->startPointer; particles < interactionData->endPointer; particles++) {
-        Particle* particleOne = particles->particleOne;
-        Particle* particleTwo = particles->particleTwo;
-
-        float diffX = particleOne->posX - particleTwo->posX;
-        float diffY = particleOne->posY - particleTwo->posY;
-
-        float distance = calcDistance(diffX, diffY);
-
-        if (distance > 20) {
-            float gravWeight = 1 / powThree(distance);
-
-            float gravFactorI = -particleTwo->mass * gravWeight;
-            float gravFactorJ = -particleOne->mass * gravWeight;
-
-            mtx_lock(&particleOne->mutex);
-            particleOne->velX += gravFactorI * diffX;
-            particleOne->velY += gravFactorI * diffY;
-            mtx_unlock(&particleOne->mutex);
-
-            mtx_lock(&particleTwo->mutex);
-            particleTwo->velX -= gravFactorJ * diffX;
-            particleTwo->velY -= gravFactorJ * diffY;
-            mtx_unlock(&particleTwo->mutex);
-        }
-    }
-
-    return 0;
+    glDeleteBuffers(1, &particlesBuffer);
+    glDeleteBuffers(1, &velocityBuffer);
 }
 
 void updatePhysics() {
-    for (int i = 0; i < not; i++) {
-        thrd_create(&threadIds[i], particleInteractions, (void*) (interactionDatas + i));
-    }
+    glUseProgram(physicsProgramID);
+    glDispatchCompute(nop / 8, nop / 4, 1);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
-    for (int i = 0; i < not; i++) {
-        thrd_join(threadIds[i], NULL);
-    }
+    glUseProgram(sumVelProgramID);
+    glDispatchCompute(nop / 32, 1, 1);
+    glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
-    for (int i = 0; i < nop; i++) {
-        particles[i].posX += particles[i].velX;
-        particles[i].posY += particles[i].velY;
-    }
+    glUseProgram(0);
 }

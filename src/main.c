@@ -13,7 +13,7 @@
 #include "helperFiles/globalStructs.h"
 #include "helperFiles/globalFunctions.h"
 
-#define NOP 1000 // Number of particle
+#define NOP 10240 // Number of particle
 #define SEGMENTS 128 // Segment in a circle
 
 int main(void) {
@@ -23,7 +23,7 @@ int main(void) {
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 3.3
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
@@ -59,6 +59,9 @@ int main(void) {
 		return -1;
 	}
 
+    time_t t;
+    srand((unsigned) time(&t));
+
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     GLuint VertexArrayID;
@@ -71,8 +74,6 @@ int main(void) {
     if (initializeParticles(NOP)) { return 1; }
     initializeGlfwCallbacks(NOP);
 
-    Particle* particles = getParticles();
-
     GLuint programID = LoadShaders( "shaders/circle.vert", "shaders/circle.frag" );
 
     GLuint circleBuffer;
@@ -82,31 +83,28 @@ int main(void) {
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(programID);
         glfwPollEvents();
 
+        // physics
         if (simulationState.pauze == 0) {
             updatePhysics();
         }
         
-        if (viewportState.trackedParticle != -1) {
-            viewportState.transX = -particles[viewportState.trackedParticle].posX;
-            viewportState.transY = -particles[viewportState.trackedParticle].posY;
-        }
+        // if (viewportState.trackedParticle != -1) {
+        //     viewportState.transX = -particles[viewportState.trackedParticle].posX;
+        //     viewportState.transY = -particles[viewportState.trackedParticle].posY;
+        // }
 
-        // Drawing correction function
-        double startTime = glfwGetTime();
-        correctDrawing();
+        // Drawing
+        glUseProgram(programID);
 
-        for (int i = 0; i < NOP; i++) {
-            drawCircleBufferless(programID, circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
-        }
-        printf("%fms\n", ((glfwGetTime() - startTime) * 1000));
+        correctDrawing(programID);
+        drawCircleBufferless(SEGMENTS, NOP);
 
         glfwSwapBuffers(window);
 
         double curTime = glfwGetTime();
-        // printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
+        printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
         prevTime = curTime;
     }
     while( glfwWindowShouldClose(window) == 0);
@@ -117,7 +115,7 @@ int main(void) {
     glDeleteProgram(programID);
     glfwDestroyWindow(window);
 
-    destroyParticles(particles);
+    destroyParticles();
 
     return 0;
 }

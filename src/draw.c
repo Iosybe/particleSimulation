@@ -49,20 +49,26 @@ void buildUnitCircle(GLfloat** circlePointer, int segments) {
 }
 
 // Too avoid NOP divisions
-void correctDrawing() {
+void correctDrawing(GLuint program) {
     correctionX = viewportState.zoomScale / windowState.width;
     correctionY = viewportState.zoomScale / windowState.height;
+
+    GLuint correctionLocation = glGetUniformLocation(program, "correction");
+    glUniform2f(correctionLocation, correctionX, correctionY);
+
+    GLuint transCorrectionLocation = glGetUniformLocation(program, "transCorrection");
+    glUniform2f(transCorrectionLocation, viewportState.transX, viewportState.transY);
 }
 
-void drawCircle(GLuint program, GLfloat* circle, int segments, float posX, float posY, float radius) {
-    GLuint vertexbuffer;
-    createCircleBuffer(circle, segments, &vertexbuffer);
+// void drawCircle(GLuint program, GLfloat* circle, int segments, float posX, float posY, float radius) {
+//     GLuint vertexbuffer;
+//     createCircleBuffer(circle, segments, &vertexbuffer);
 
-    drawCircleBufferless(program, circle, segments, posX, posY, radius);
+//     drawCircleBufferless(program, circle, segments, posX, posY, radius);
 
-    glDisableVertexAttribArray(0);
-    glDeleteBuffers(1, &vertexbuffer);
-}
+//     glDisableVertexAttribArray(0);
+//     glDeleteBuffers(1, &vertexbuffer);
+// }
 
 void createCircleBuffer(GLfloat* circle, int segments, GLuint* buffer) {
     glGenBuffers(1, buffer);
@@ -70,26 +76,9 @@ void createCircleBuffer(GLfloat* circle, int segments, GLuint* buffer) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * segments * 6, circle, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,                  // attribute 0
-        2,                  // size
-        GL_FLOAT,           // type
-        GL_FALSE,           // normalized?
-        0,                  // stride
-        0                   // offset
-    );
-
-    // glDisableVertexAttribArray(0);
-    // glDeleteBuffers(1, &vertexbuffer);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 }
 
-void drawCircleBufferless(GLuint program, GLfloat* circle, int segments, float posX, float posY, float radius) {
-    // only getting locations once would be faster
-    GLuint translationLocation = glGetUniformLocation(program, "translation");
-    glUniform2f(translationLocation, getCorrectedPosX(posX), getCorrectedPosY(posY));
-
-    GLuint scaleLocation = glGetUniformLocation(program, "scale");
-    glUniform2f(scaleLocation, getCorrectedWidth(radius), getCorrectedHeight(radius));
-
-    glDrawArrays(GL_TRIANGLES, 0, segments * 3);
+void drawCircleBufferless(int segments, int particleAmount) {
+    glDrawArraysInstanced(GL_TRIANGLES, 0, segments * 3, particleAmount);
 }

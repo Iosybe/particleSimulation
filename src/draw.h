@@ -6,12 +6,12 @@
 
 #define M_PI (3.14159265358979323846264338327950288)
 
-void correctDrawing();
+void correctDrawing(GLuint program);
 
 void buildUnitCircle(GLfloat** circle, int segments);
-void drawCircle(GLuint program, GLfloat* templateCircle, int segments, float centerX, float centerY, float radius);
+// void drawCircle(GLuint program, GLfloat* templateCircle, int segments, float centerX, float centerY, float radius);
 
 void createCircleBuffer(GLfloat* circle, int segments, GLuint* buffer);
-void drawCircleBufferless(GLuint program, GLfloat* circle, int segments, float posX, float posY, float radius);
+void drawCircleBufferless(int segments, int particleAmount);
 
 #endif

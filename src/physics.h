@@ -3,33 +3,13 @@
 
 #include <tinycthread.h>
 
-#define NOIPT 60000 // Number of interactions per thread
-
 typedef struct particle {
-    int id;
+    float pos[2];
+    float vel[2];
     float mass;
-
-    float posX;
-    float posY;
-
-    float velX;
-    float velY;
-
-    // pthread_mutex_t mutex; 
-    mtx_t mutex;
+    // padding because vec are gay
+    float padding;
 } Particle;
-
-typedef struct combCouple {
-    Particle* particleOne;
-    Particle* particleTwo;
-} CombCouple;
-
-typedef struct InteractionData {
-    CombCouple* startPointer;
-    CombCouple* endPointer;
-} InteractionData;
-
-Particle* getParticles();
 
 int initializeParticles(int _nop);
 void destroyParticles();
