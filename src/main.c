@@ -23,7 +23,7 @@ int main(void) {
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL 
@@ -47,18 +47,14 @@ int main(void) {
         return -1;
     }
 
-    glfwMakeContextCurrent(window); // Initialize GLEW
-    // glewExperimental = 1; // Needed in core profile
+    glfwMakeContextCurrent(window); // Initialize GLAD
 
-    // if (glewInit() != GLEW_OK) {
-    //     fprintf(stderr, "Failed to initialize GLEW\n");
-    //     return -1;
-    // }
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		fprintf(stderr, "Failed to initialize GLAD");
 		return -1;
 	}
 
+    // Seed random values
     time_t t;
     srand((unsigned) time(&t));
 

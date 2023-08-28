@@ -9,21 +9,24 @@ struct Particle {
 };
 
 layout(std430, binding = 1) buffer particlesBuffer {
+    int nopMone;
     Particle particles[];
 };
 
 layout(std430, binding = 2) buffer velocityBuffer {
-    int velBufferSize;
     vec2 velBuffer[];
 };
 
 void main() {
-    vec2 tempVel;
+    vec2 velSum = vec2(0.0, 0.0);
 
-    for (int i = 0; i < velBufferSize - 1; i++) {
-        tempVel += velBuffer[gl_GlobalInvocationID.x * (velBufferSize - 1) + i];
+    uint startIndex = gl_GlobalInvocationID.x * nopMone;
+    uint endIndex = startIndex + nopMone;
+
+    for (uint i = startIndex; i < endIndex; i++) {
+        velSum += velBuffer[i];
     }
 
-    particles[gl_GlobalInvocationID.x].vel += tempVel;
+    particles[gl_GlobalInvocationID.x].vel += velSum;
     particles[gl_GlobalInvocationID.x].pos += particles[gl_GlobalInvocationID.x].vel;
 }

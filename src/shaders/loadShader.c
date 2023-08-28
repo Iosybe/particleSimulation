@@ -69,7 +69,7 @@ GLuint LoadComputeShaders(const char* computeFilePath) {
 
 	glAttachShader(ProgramID, computeShaderID);
 	glLinkProgram(ProgramID);
-	checkCompileErrors(ProgramID, computeFilePath);
+	checkCompileErrors(ProgramID, "Compute shader linking");
 	
 	glDetachShader(ProgramID, computeShaderID);
 	glDeleteShader(computeShaderID);
@@ -115,7 +115,7 @@ GLuint LoadShaders(const char* vertexFilePath, const char* fragmentFilePath) {
 	glLinkProgram(ProgramID);
 
 	// combine the file paths
-	checkCompileErrors(ProgramID, "vertex + fragment file");
+	checkCompileErrors(ProgramID, "Vertex & Fragment shader linking");
 	
 	glDetachShader(ProgramID, vertexShaderID);
 	glDetachShader(ProgramID, fragmentShaderID);

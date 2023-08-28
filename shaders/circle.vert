@@ -9,6 +9,7 @@ struct Particle {
 };
 
 layout(std430, binding = 1) buffer particlesBuffer {
+    int nopMone;
     Particle particles[];
 };
 
@@ -23,6 +24,7 @@ void main() {
     gl_Position.xy = vertex * scale + translation;
     gl_Position.z = 0.0;
     gl_Position.w = 1.0;
+
 }
 
 
@@ -35,6 +37,50 @@ void main() {
 
 
 // ---------------------- Debug stuff ----------------------
+
+    // if (gl_InstanceID == 0) {
+    //     // gl_Position.x = (vertex.x * 0.01 + float(gl_InstanceID % 32) * 0.05) - 0.80;
+    //     // gl_Position.y = (vertex.y * 0.01 + float(gl_InstanceID / 32) * 0.05) - 0.80;
+    //     // gl_Position.x = vertex.x * 0.01 + particles[0].pos[0];
+    //     gl_Position.x = vertex.x * 0.01 + particles[0].pos[0];
+    //     gl_Position.y = vertex.y * 0.01 + 0.0;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+    // }
+    // else if (gl_InstanceID == 1) {
+    //     gl_Position.x = vertex.x * 0.01 + particles[0].pos[1];
+    //     gl_Position.y = vertex.y * 0.01 + 0.2;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+
+    // }
+    // else if (gl_InstanceID == 2) {
+    //     gl_Position.x = vertex.x * 0.01 + particles[0].vel[0];
+    //     gl_Position.y = vertex.y * 0.01 + 0.4;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+
+    // }
+    // else if (gl_InstanceID == 3) {
+    //     gl_Position.x = vertex.x * 0.01 + particles[0].vel[1];
+    //     gl_Position.y = vertex.y * 0.01 + 0.6;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+
+    // }
+    // else if (gl_InstanceID == 4) {
+    //     gl_Position.x = vertex.x * 0.01 + particles[0].mass;
+    //     gl_Position.y = vertex.y * 0.01 + 0.8;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+
+    // }
+    // else {
+    //     gl_Position.x = vertex.x * scale.x + translation.x;
+    //     gl_Position.y = vertex.y * scale.y + translation.y;
+    //     gl_Position.z = 0.0;
+    //     gl_Position.w = 1.0;
+    // }
 
     // if (gl_InstanceID == 0 || gl_InstanceID == 1) {
     //     gl_Position.x = vertex.x * 0.01 + particles[1].pos[0];
