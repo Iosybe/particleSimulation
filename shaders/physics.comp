@@ -19,27 +19,17 @@ layout(std430, binding = 2) buffer velocityBuffer {
 };
 
 void main() {
-    // Give nopM1 / 2 a variable
     if (gl_GlobalInvocationID.y > nopM1 / 2) {
         return;
     }
 
-    // Can't give these proper names, because there multifunctional
-    ivec2 particleIndices;
-    ivec2 bufferIndices;
+    uint fitted = uint(gl_GlobalInvocationID.x >= gl_GlobalInvocationID.y);
 
-    // Maybe turnary? Maybe conditional *?
-    if (gl_GlobalInvocationID.x >= gl_GlobalInvocationID.y) {
-        particleIndices = ivec2(gl_GlobalInvocationID.x + 1, gl_GlobalInvocationID.y);
-        bufferIndices = ivec2(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y);
-    }
-    else {
-        particleIndices = ivec2(nopM1 - gl_GlobalInvocationID.x, nopM1 - gl_GlobalInvocationID.y);
-        bufferIndices = ivec2(nopM1 - gl_GlobalInvocationID.x - 1, nopM1 - gl_GlobalInvocationID.y);
-    }
+    uvec2 particleIndices = uvec2((nopM1 - 1) * fitted - (gl_GlobalInvocationID.x + 1), nopM1 * fitted - gl_GlobalInvocationID.y);
 
-    // Putting this in if else could be faster or slower
-    ivec2 velBufferIndices = ivec2(bufferIndices.y * nopX128 + bufferIndices.x, particleIndices.x * nopX128 + particleIndices.y);
+    uvec2 velBufferIndices;
+    velBufferIndices.x = (nopM1 * fitted - gl_GlobalInvocationID.y) * nopX128 + (nopM1 + 1) * fitted - gl_GlobalInvocationID.x - 1;
+    velBufferIndices.y = particleIndices.x * nopX128 + particleIndices.y;
 
     vec2 diff = particles[particleIndices.x].pos - particles[particleIndices.y].pos;
     float distance = length(diff);
@@ -59,47 +49,3 @@ void main() {
         velBuffer[velBufferIndices.y] = 0.0.xx;
     }
 }
-
-// -----------------------------------
-
-// void main() {
-//     float diffX = particles[gl_GlobalInvocationID.x].pos.x - particles[gl_GlobalInvocationID.y].pos.x;
-//     float diffY = particles[gl_GlobalInvocationID.x].pos.y - particles[gl_GlobalInvocationID.y].pos.y;
-    
-//     float distance = sqrt(diffX * diffX + diffY * diffY);
-
-//     bool valid = distance > 20;
-
-//     float gravWeight = 1 / (distance * distance * distance);
-
-//     vec2 gravFactor;
-//     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight * valid;
-//     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight * valid;
-
-//     velBuffer[].x = gravFactor.x * diffX;
-//     velBuffer[].y = gravFactor.x * diffY;
-
-//     velBuffer[].x = gravFactor.y * diffX;
-//     velBuffer[].y = gravFactor.y * diffY;
-
-//     // if (distance > 20) {
-//     //     float gravWeight = 1 / (distance * distance * distance);
-
-//     //     vec2 gravFactor;
-//     //     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight;
-//     //     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight;
-
-//     //     velBuffer[].x = gravFactor.x * diffX;
-//     //     velBuffer[].y = gravFactor.x * diffY;
-
-//     //     velBuffer[].x = gravFactor.y * diffX;
-//     //     velBuffer[].y = gravFactor.y * diffY;
-//     // }
-//     // else {
-//     //     velBuffer[].x = 0.0;
-//     //     velBuffer[].y = 0.0;
-
-//     //     velBuffer[].x = 0.0;
-//     //     velBuffer[].y = 0.0;
-//     // }
-// }
