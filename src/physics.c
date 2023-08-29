@@ -72,11 +72,11 @@ void destroyParticles() {
 
 void updatePhysics() {
     glUseProgram(physicsProgramID);
-    glDispatchCompute(nop / 8, nop / 4, 1);
+    glDispatchCompute(nop / 16, nop / 8, 1);
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     glUseProgram(sumVelProgramID);
-    glDispatchCompute(nop / 32, 1, 1);
+    glDispatchCompute(nop / 128, 1, 1);
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     glUseProgram(0);
