@@ -9,6 +9,10 @@
 #include <glad/glad.h>
 
 int nop; // Number of particles
+
+int workGroupsPhysics[2];
+int workGroupsSumVel;
+
 GLuint physicsProgramID;
 GLuint sumVelProgramID;
 
@@ -18,11 +22,25 @@ GLuint velocityBuffer;
 int initializeParticles(int _nop) {
     nop = _nop;
 
+    int nopX16 = nop + 16 * (nop % 16 > 0); // nop rounded up to 16
+    int nopX128 = nop + 128 * (nop & 128 > 0); // nop rounded up to 128
+
+    workGroupsPhysics[0] = nop / 16 + (nop % 16 > 0);
+    workGroupsPhysics[1] = nop / 8 + (nop % 8 > 0);
+
+    workGroupsSumVel = nop / 128 + (nop % 128 > 0);
+
+    // workGroupsPhysics[0] = nop / 16 + ;
+    // workGroupsPhysics[1] = nop / 2 / 8 + (nop % 8 > 0);
+
+    // workGroupsSumVel = nop / 128 + (nop % 128 > 0);
+
     // Creating Particles
-    int* particlesWnop = (int*) malloc(sizeof(Particle) * nop + sizeof(int) * 2);
+    int* particlesWnop = (int*) malloc(sizeof(Particle) * nopX16 + sizeof(int) * 2);
     if (particlesWnop == NULL) { return 1; }
 
     *particlesWnop = nop - 1;
+    *(particlesWnop + 1) = nopX128 - 1;
     Particle* particles = (Particle*) (particlesWnop + 2);
 
     for (int i = 0; i < nop; i++) {
@@ -44,7 +62,7 @@ int initializeParticles(int _nop) {
 
     glGenBuffers(1, &particlesBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, particlesBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * nop + sizeof(int) * 2, particlesWnop, GL_DYNAMIC_DRAW);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * nopX16 + sizeof(int) * 2, particlesWnop, GL_DYNAMIC_DRAW);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, particlesBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -53,7 +71,7 @@ int initializeParticles(int _nop) {
     // Creating velocity buffer
     glGenBuffers(1, &velocityBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, velocityBuffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * sizeof(float) * (nop * nop - nop), NULL, GL_DYNAMIC_DRAW); // Should be changed to fixed size
+    glBufferData(GL_SHADER_STORAGE_BUFFER, 2 * sizeof(float) * (nopX128 * nopX128 - nopX128), NULL, GL_DYNAMIC_DRAW); // Should be changed to fixed size
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, velocityBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
@@ -72,11 +90,11 @@ void destroyParticles() {
 
 void updatePhysics() {
     glUseProgram(physicsProgramID);
-    glDispatchCompute(nop / 16, nop / 8, 1);
+    glDispatchCompute(workGroupsPhysics[0], workGroupsPhysics[1], 1);
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     glUseProgram(sumVelProgramID);
-    glDispatchCompute(nop / 128, 1, 1);
+    glDispatchCompute(workGroupsSumVel, 1, 1);
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     glUseProgram(0);

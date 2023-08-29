@@ -9,7 +9,8 @@ struct Particle {
 };
 
 layout(std430, binding = 1) buffer particlesBuffer {
-    int nopMone;
+    int nopM1;
+    int nopX128M1;
     Particle particles[];
 };
 
@@ -25,7 +26,7 @@ void main() {
     vec2 diff = particles[gl_GlobalInvocationID.x].pos - particles[gl_GlobalInvocationID.y].pos;
     float distance = length(diff);
 
-    uint velBufferIndex = gl_GlobalInvocationID.y * nopMone + gl_GlobalInvocationID.x - uint(gl_GlobalInvocationID.x > gl_GlobalInvocationID.y);
+    uint velBufferIndex = gl_GlobalInvocationID.y * nopX128M1 + gl_GlobalInvocationID.x - uint(gl_GlobalInvocationID.x > gl_GlobalInvocationID.y);
 
     if (distance > 20) {
         float gravFactor = particles[gl_GlobalInvocationID.y].mass / (pow(distance, 3));
