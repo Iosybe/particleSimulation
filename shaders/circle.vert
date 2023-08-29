@@ -9,7 +9,8 @@ struct Particle {
 };
 
 layout(std430, binding = 1) buffer particlesBuffer {
-    int nopMone;
+    int nopM1;
+    int nopX128M1;
     Particle particles[];
 };
 
