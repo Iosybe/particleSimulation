@@ -60,6 +60,8 @@ int initializeParticles(int _nop) {
         // };
     }
 
+    // particles[0].mass = 50.0;
+
     glGenBuffers(1, &particlesBuffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, particlesBuffer);
     glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Particle) * nopX16 + sizeof(int) * 2, particlesWnop, GL_DYNAMIC_DRAW);
@@ -91,6 +93,7 @@ void destroyParticles() {
 void updatePhysics() {
     glUseProgram(physicsProgramID);
     glDispatchCompute(workGroupsPhysics[0], workGroupsPhysics[1], 1);
+    // glDispatchCompute(workGroupsPhysics[1], workGroupsPhysics[0], 1);
     glMemoryBarrier(GL_ALL_BARRIER_BITS);
 
     glUseProgram(sumVelProgramID);

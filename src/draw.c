@@ -49,7 +49,7 @@ void buildUnitCircle(GLfloat** circlePointer, int segments) {
 }
 
 // Too avoid NOP divisions
-void correctDrawing(GLuint program) {
+void correctDrawing(GLuint program, int trackedParticle) {
     correctionX = viewportState.zoomScale / windowState.width;
     correctionY = viewportState.zoomScale / windowState.height;
 
@@ -58,6 +58,9 @@ void correctDrawing(GLuint program) {
 
     GLuint transCorrectionLocation = glGetUniformLocation(program, "transCorrection");
     glUniform2f(transCorrectionLocation, viewportState.transX, viewportState.transY);
+
+    GLuint trackedParticleLocation = glGetUniformLocation(program, "trackedParticle");
+    glUniform1i(trackedParticleLocation, trackedParticle);
 }
 
 // void drawCircle(GLuint program, GLfloat* circle, int segments, float posX, float posY, float radius) {

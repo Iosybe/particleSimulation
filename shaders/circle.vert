@@ -9,22 +9,30 @@ struct Particle {
 };
 
 layout(std430, binding = 1) buffer particlesBuffer {
-    int nopMone;
+    int nopM1;
+    int nopX128M1;
     Particle particles[];
 };
 
 uniform vec2 correction;
 uniform vec2 transCorrection;
+uniform int trackedParticle;
 
 void main() {
-    // Calculate in comp shader. sumVel?
-    vec2 translation = (particles[gl_InstanceID].pos + transCorrection) * correction;
+    vec2 translation;
+
+    if (trackedParticle >= 0) {
+        translation = (particles[gl_InstanceID].pos - particles[trackedParticle].pos) * correction;
+    }
+    else {
+        translation = (particles[gl_InstanceID].pos + transCorrection) * correction;
+    }
+
     vec2 scale = particles[gl_InstanceID].mass.xx * correction;
 
     gl_Position.xy = vertex * scale + translation;
     gl_Position.z = 0.0;
     gl_Position.w = 1.0;
-
 }
 
 

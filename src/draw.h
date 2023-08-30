@@ -6,7 +6,7 @@
 
 #define M_PI (3.14159265358979323846264338327950288)
 
-void correctDrawing(GLuint program);
+void correctDrawing(GLuint program, int trackedParticle);
 
 void buildUnitCircle(GLfloat** circle, int segments);
 // void drawCircle(GLuint program, GLfloat* templateCircle, int segments, float centerX, float centerY, float radius);

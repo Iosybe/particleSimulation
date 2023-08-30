@@ -24,60 +24,18 @@ void main() {
     }
 
     vec2 diff = particles[gl_GlobalInvocationID.x].pos - particles[gl_GlobalInvocationID.y].pos;
+    // vec2 diff = particles[gl_GlobalInvocationID.y].pos - particles[gl_GlobalInvocationID.x].pos;
     float distance = length(diff);
 
     uint velBufferIndex = gl_GlobalInvocationID.y * nopX128M1 + gl_GlobalInvocationID.x - uint(gl_GlobalInvocationID.x > gl_GlobalInvocationID.y);
+    // uint velBufferIndex = gl_GlobalInvocationID.x * nopX128M1 + gl_GlobalInvocationID.y - uint(gl_GlobalInvocationID.x < gl_GlobalInvocationID.y);
 
     if (distance > 20) {
-        float gravFactor = particles[gl_GlobalInvocationID.y].mass / (pow(distance, 3));
-
+        float gravFactor = particles[gl_GlobalInvocationID.x].mass / (pow(distance, 3));
+        // float gravFactor = particles[gl_GlobalInvocationID.y].mass / (pow(distance, 3));
         velBuffer[velBufferIndex] = gravFactor.xx * diff;
     }
     else {
         velBuffer[velBufferIndex] = 0.0.xx;
     }
 }
-
-// -----------------------------------
-
-// void main() {
-//     float diffX = particles[gl_GlobalInvocationID.x].pos.x - particles[gl_GlobalInvocationID.y].pos.x;
-//     float diffY = particles[gl_GlobalInvocationID.x].pos.y - particles[gl_GlobalInvocationID.y].pos.y;
-    
-//     float distance = sqrt(diffX * diffX + diffY * diffY);
-
-//     bool valid = distance > 20;
-
-//     float gravWeight = 1 / (distance * distance * distance);
-
-//     vec2 gravFactor;
-//     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight * valid;
-//     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight * valid;
-
-//     velBuffer[].x = gravFactor.x * diffX;
-//     velBuffer[].y = gravFactor.x * diffY;
-
-//     velBuffer[].x = gravFactor.y * diffX;
-//     velBuffer[].y = gravFactor.y * diffY;
-
-//     // if (distance > 20) {
-//     //     float gravWeight = 1 / (distance * distance * distance);
-
-//     //     vec2 gravFactor;
-//     //     gravFactor.x = -particles[gl_GlobalInvocationID.y].mass * gravWeight;
-//     //     gravFactor.y = particles[gl_GlobalInvocationID.x].mass * gravWeight;
-
-//     //     velBuffer[].x = gravFactor.x * diffX;
-//     //     velBuffer[].y = gravFactor.x * diffY;
-
-//     //     velBuffer[].x = gravFactor.y * diffX;
-//     //     velBuffer[].y = gravFactor.y * diffY;
-//     // }
-//     // else {
-//     //     velBuffer[].x = 0.0;
-//     //     velBuffer[].y = 0.0;
-
-//     //     velBuffer[].x = 0.0;
-//     //     velBuffer[].y = 0.0;
-//     // }
-// }

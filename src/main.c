@@ -76,6 +76,7 @@ int main(void) {
     createCircleBuffer(circle, SEGMENTS, &circleBuffer);
 
     double prevTime = glfwGetTime();
+    int timeIndex = 0;
 
     do {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -85,23 +86,23 @@ int main(void) {
         if (simulationState.pauze == 0) {
             updatePhysics();
         }
-        
-        // if (viewportState.trackedParticle != -1) {
-        //     viewportState.transX = -particles[viewportState.trackedParticle].posX;
-        //     viewportState.transY = -particles[viewportState.trackedParticle].posY;
-        // }
 
         // Drawing
         glUseProgram(programID);
 
-        correctDrawing(programID);
+        correctDrawing(programID, viewportState.trackedParticle);
         drawCircleBufferless(SEGMENTS, NOP);
 
         glfwSwapBuffers(window);
 
-        double curTime = glfwGetTime();
-        printf("fps: %i\n", (int) (1.0 / (curTime - prevTime)));
-        prevTime = curTime;
+        if (++timeIndex > 20) {
+            double curTime = glfwGetTime();
+
+            printf("fps: %i\n", (int) (20 / (curTime - prevTime)));
+
+            timeIndex = 0;
+            prevTime = curTime;
+        }
     }
     while( glfwWindowShouldClose(window) == 0);
 
