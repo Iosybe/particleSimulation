@@ -23,8 +23,13 @@ typedef struct windowStateStruct {
     int fullscreenState;
 } WindowStateStruct;
 
+typedef struct simulationStateStruct {
+    int pauze;
+} SimulationStateStruct;
+
 extern ViewportStateStruct viewportState;
 extern WindowStateStruct windowState;
+extern SimulationStateStruct simulationState;
 
 #endif
 

@@ -9,7 +9,7 @@
 
 #include "shaders/loadShader.hpp"
 #include "glfw/glfwCallbacks.h"
-#include "shapes.h"
+#include "draw.h"
 #include "physics.h"
 #include "helperFiles/globalStructs.h"
 #include "helperFiles/globalFunctions.h"
@@ -70,6 +70,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
     if (key == GLFW_KEY_EQUAL && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
         viewportState.zoomScale *= 1.1;
+    }
+
+    if (key == GLFW_KEY_SPACE && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+        simulationState.pauze = !simulationState.pauze;
+    }
+
+    if (key == GLFW_KEY_PERIOD && (action == GLFW_REPEAT || action == GLFW_PRESS)) {
+        updatePhysics(particles);
     }
 
     UNUSED(mods);
@@ -158,16 +166,18 @@ int main() {
 
         glUseProgram(programID);
 
-        calculatePhysics(particles);
+        if (simulationState.pauze == 0) {
+            updatePhysics(particles);
+        };
         
         if (viewportState.trackedParticle != -1) {
             viewportState.transX = -particles[viewportState.trackedParticle].posX;
             viewportState.transY = -particles[viewportState.trackedParticle].posY;
-        }
-
+        };
         for (int i = 0; i < NOP; i++) {
             drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
-        }
+        };
+
 
         // while (prevTime + 100 > clock()) {
         //     glfwPollEvents();

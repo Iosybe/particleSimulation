@@ -17,6 +17,6 @@ typedef struct particle {
 } Particle;
 
 void initializeParticles(Particle* particles);
-void calculatePhysics(Particle* particles);
+void updatePhysics(Particle* particles);
 
 #endif

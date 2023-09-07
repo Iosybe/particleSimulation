@@ -16,3 +16,7 @@ WindowStateStruct windowState = (WindowStateStruct) {
     500, // height
     0, // fullscreenState
 };
+
+SimulationStateStruct simulationState = (SimulationStateStruct) {
+    0,
+};
