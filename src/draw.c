@@ -43,14 +43,6 @@ void drawCircle(GLfloat* templateCircle, int segments, float posX, float posY, f
 
     float correctedPosX = (posX + viewportState.transX) * viewportState.zoomScale / windowState.width;
     float correctedPosY = (posY + viewportState.transY) * viewportState.zoomScale / windowState.height;
-
-    float windowRadiusSquared = powTwo(windowState.width) + powTwo(windowState.height);
-    float distanceToOriginSquared = powTwo(posX + viewportState.transX) + powTwo(posY + viewportState.transY);
-
-    if (windowRadiusSquared < distanceToOriginSquared) {
-        return;
-    }
-
     float correctedRadiusX = radius * viewportState.zoomScale / windowState.width;
     float correctedRadiusY = radius * viewportState.zoomScale / windowState.height;
 

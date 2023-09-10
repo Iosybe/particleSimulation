@@ -92,6 +92,13 @@ int main(void) {
         }
 
         for (int i = 0; i < NOP; i++) {
+            float windowRadiusSquared = powTwo(windowState.width) + powTwo(windowState.height);
+            float distanceToOriginSquared = powTwo(particles[i].posX + viewportState.transX) + powTwo(particles[i].posY + viewportState.transY);
+
+            if (windowRadiusSquared < distanceToOriginSquared) {
+                continue;
+            }
+
             drawCircle(circle, SEGMENTS, particles[i].posX, particles[i].posY, particles[i].mass);
         }
 
