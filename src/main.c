@@ -13,7 +13,7 @@
 #include "helperFiles/globalStructs.h"
 #include "helperFiles/globalFunctions.h"
 
-#define NOP 10240 // Number of particle
+#define NOP 2048 // Number of particle
 #define SEGMENTS 128 // Segment in a circle
 
 int main(void) {
