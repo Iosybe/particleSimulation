@@ -104,19 +104,6 @@ void destroyParticles() {
     free(threadIds);
 }
 
-// Optimization because pow() is slow
-float powTwo(float n) {
-    return n * n;
-}
-
-float powThree(float n) {
-    return n * n * n;
-}
-
-float calcDistance(float diffX, float diffY) {
-    return sqrt(powTwo(diffX) + powTwo(diffY));
-}
-
 void* particleInteractions(void* args) {
     InteractionData* interactionData = (InteractionData*) args;
 

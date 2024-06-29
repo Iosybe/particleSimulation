@@ -1,6 +1,7 @@
 #undef __STRICT_ANSI__
 #include "draw.h"
 #include "helperFiles/globalStructs.h"
+#include "helperFiles/globalFunctions.h"
 
 #include <stdlib.h>
 #include <math.h>
