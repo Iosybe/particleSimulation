@@ -1,5 +1,7 @@
 #include "glfwCallbacks.h"
 #include "../helperFiles/globalStructs.h"
+#include "../helperFiles/globalFunctions.h"
+#include "../physics.h"
 
 int callbacksNop = 0;
 

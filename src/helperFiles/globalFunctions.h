@@ -1,6 +1,8 @@
 #ifndef GLOBALFUNCTIONS_H
 #define GLOBALFUNCTIONS_H
 
+int randInt(int max);
+
 // Generates random float that is between 1 and max + 1
 float randFloat(float max);
 

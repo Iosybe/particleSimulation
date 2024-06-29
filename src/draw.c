@@ -3,6 +3,7 @@
 #include "helperFiles/globalStructs.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 void window_size_callback(GLFWwindow* window, int _width, int _height) {
     windowState.width = _width;
