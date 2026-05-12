@@ -1,7 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include <tinycthread.h>
+#include <threads.h>
 
 #define NOIPT 60000 // Number of interactions per thread
 

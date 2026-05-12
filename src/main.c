@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -114,7 +111,7 @@ int main(void) {
     glDeleteProgram(programID);
     glfwDestroyWindow(window);
 
-    destroyParticles(particles);
+    destroyParticles();
 
     return 0;
 }

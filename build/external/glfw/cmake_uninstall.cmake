@@ -1,9 +1,9 @@
 
-if (NOT EXISTS "/home/io/data/code/c/particleSimulation/build/external/glfw/install_manifest.txt")
-    message(FATAL_ERROR "Cannot find install manifest: \"/home/io/data/code/c/particleSimulation/build/external/glfw/install_manifest.txt\"")
+if (NOT EXISTS "/home/iosybe/Documents/projects/particleSimulation/build/external/glfw/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install manifest: \"/home/iosybe/Documents/projects/particleSimulation/build/external/glfw/install_manifest.txt\"")
 endif()
 
-file(READ "/home/io/data/code/c/particleSimulation/build/external/glfw/install_manifest.txt" files)
+file(READ "/home/iosybe/Documents/projects/particleSimulation/build/external/glfw/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 
 foreach (file ${files})
